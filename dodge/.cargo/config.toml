@@ -1,0 +1,12 @@
+[env]
+LIBCLANG_PATH = "C:/Program Files/LLVM/bin"
+BINDGEN_EXTRA_CLANG_ARGS = "--target=wasm32-unknown-emscripten --sysroot=C:/Users/JO/Documents/dev/emsdk/upstream/emscripten/cache/sysroot"
+
+[target.wasm32-unknown-emscripten]
+rustflags = [
+    "-C", "link-args=-sSIDE_MODULE=2",
+    "-C", "llvm-args=-enable-emscripten-cxx-exceptions=0",
+    "-Z", "default-visibility=hidden",
+    "-Z", "link-native-libraries=no",
+    "-Z", "emscripten-wasm-eh=false",
+]
