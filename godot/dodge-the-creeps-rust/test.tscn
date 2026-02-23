@@ -1,0 +1,3 @@
+[gd_scene format=3 uid="uid://pcxttvshvv5r"]
+
+[node name="Test" type="RigidBody2D" unique_id=1349203562]

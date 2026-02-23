@@ -1,10 +1,23 @@
 [gd_scene format=3 uid="uid://lfoq8b8tjoub"]
 
+[ext_resource type="Texture2D" uid="uid://4sxjvly6e5a8" path="res://art/playerGrey_up1.png" id="1_hqtel"]
 [ext_resource type="Texture2D" uid="uid://bok2viet4k536" path="res://art/playerGrey_walk1.png" id="1_onrkg"]
 [ext_resource type="Texture2D" uid="uid://df7rs5vrhwxk3" path="res://art/playerGrey_walk2.png" id="2_i3pqv"]
+[ext_resource type="Texture2D" uid="uid://co47qe4xkc2x5" path="res://art/playerGrey_up2.png" id="2_sweqy"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_hqtel"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_hqtel")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_sweqy")
+}],
+"loop": true,
+"name": &"up",
+"speed": 5.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": ExtResource("1_onrkg")
@@ -13,7 +26,7 @@ animations = [{
 "texture": ExtResource("2_i3pqv")
 }],
 "loop": true,
-"name": &"default",
+"name": &"walk",
 "speed": 5.0
 }]
 
@@ -29,6 +42,7 @@ metadata/_edit_group_ = true
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=382684387]
 scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_hqtel")
+animation = &"up"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=111312945]
 shape = SubResource("CapsuleShape2D_sweqy")
