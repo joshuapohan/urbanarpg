@@ -5,6 +5,7 @@ use godot::classes::Input;
 use godot::prelude::*;
 use godot::classes::Area2D;
 use godot::classes::IArea2D;
+use godot::classes::Node2D;
 
 #[derive(GodotClass)]
 #[class(base=Area2D)]
@@ -26,7 +27,8 @@ impl Player{
     #[signal]
     fn hit();
 
-    fn on_hit(&mut self){
+    fn on_hit(&mut self, body: Gd<Node2D>){
+        godot_print!("Player Hit");
         self.base_mut().hide();
         self.signals().hit().emit();
         if let Some(node) = self.base().get_node_or_null("CollisionShape2D"){
@@ -37,8 +39,16 @@ impl Player{
         }
     }
 
+    #[func]
     fn start(&mut self, pos: Vector2){
         self.base_mut().set_position(pos);
+        self.base_mut().show();
+        if let Some(node) = self.base().get_node_or_null("CollisionShape2D"){
+            let mut collision_2d: Gd<CollisionShape2D> = node.try_cast().unwrap();
+            collision_2d.set_deferred("disabled", &Variant::from(false));
+        } else {
+            godot_error!("Unable to find collision node for player")
+        }        
     }
 }
 
@@ -55,7 +65,8 @@ impl IArea2D for Player {
         let ds = DisplayServer::singleton();
         self.screen_size = ds.screen_get_size().cast_float();
         godot_print!("Screen size: {:?}", self.screen_size);
-        self.signals().hit().connect_self(Self::on_hit);
+        self.signals().body_entered().connect_self(Self::on_hit);
+        //self.signals().hit().connect_self(Self::on_hit);
         self.base_mut().hide();
     }
 
