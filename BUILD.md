@@ -36,3 +36,6 @@ The `.gdextension` file already points to the correct relative paths for both ta
 Open `godot/dodge-the-creeps-rust/` in Godot 4. The extension is loaded automatically via `dodgerust.gdextension`.
 
 For a web export, use Godot's **Export** dialog with the Web preset. The exported files land in `godot/dodge-the-creeps-rust/` alongside the `.wasm` file built above.
+
+
+cargo build -Zbuild-std --target wasm32-unknown-emscripten

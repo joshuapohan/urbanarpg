@@ -6,3 +6,4 @@ struct MyExtension;
 unsafe impl ExtensionLibrary for MyExtension {}
 
 mod entity;
+mod scene;

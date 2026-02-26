@@ -9,7 +9,7 @@ use godot::classes::Node2D;
 
 #[derive(GodotClass)]
 #[class(base=Area2D)]
-struct Player {
+pub struct Player {
     screen_size: Vector2,
 
     #[export]
@@ -40,7 +40,7 @@ impl Player{
     }
 
     #[func]
-    fn start(&mut self, pos: Vector2){
+    pub fn start(&mut self, pos: Vector2){
         self.base_mut().set_position(pos);
         self.base_mut().show();
         if let Some(node) = self.base().get_node_or_null("CollisionShape2D"){
