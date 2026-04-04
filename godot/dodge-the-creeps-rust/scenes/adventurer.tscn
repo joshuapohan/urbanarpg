@@ -428,4 +428,4 @@ texture_filter = 1
 scale = Vector2(4, 4)
 sprite_frames = SubResource("SpriteFrames_3ak1b")
 animation = &"run_up"
-frame_progress = 0.661783
+frame_progress = 0.29897296
