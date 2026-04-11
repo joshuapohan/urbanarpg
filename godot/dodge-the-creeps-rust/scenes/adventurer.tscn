@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://bmk6wssr75fbe"]
 
 [ext_resource type="Texture2D" uid="uid://dygeyk7j7d4am" path="res://assets/images/adventurer/Player.png" id="1_i0sav"]
+[ext_resource type="AudioStream" uid="uid://d3e8dhtmbctjs" path="res://assets/audio/530444__mellau__whoosh-short-4.wav" id="2_023up"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2g661"]
 atlas = ExtResource("1_i0sav")
@@ -225,9 +226,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_ko3rl")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack_down",
-"speed": 5.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -242,9 +243,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_t0w3p")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack_right",
-"speed": 5.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -259,9 +260,9 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_mmxe3")
 }],
-"loop": true,
+"loop": false,
 "name": &"attack_up",
-"speed": 5.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -278,7 +279,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"dying",
-"speed": 5.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -301,7 +302,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle_down",
-"speed": 5.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -324,7 +325,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle_right",
-"speed": 5.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -347,7 +348,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle_up",
-"speed": 5.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -370,7 +371,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"run_down",
-"speed": 5.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -393,7 +394,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"run_right",
-"speed": 5.0
+"speed": 15.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -416,16 +417,29 @@ animations = [{
 }],
 "loop": true,
 "name": &"run_up",
-"speed": 5.0
+"speed": 15.0
 }]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_023up"]
+size = Vector2(15.5, 15)
 
 [node name="Adventurer" type="Adventurer" unique_id=1073302741]
 speed = 200.0
+scale = Vector2(4, 4)
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=727604035]
 texture_filter = 1
-scale = Vector2(4, 4)
 sprite_frames = SubResource("SpriteFrames_3ak1b")
-animation = &"run_up"
-frame_progress = 0.29897296
+animation = &"attack_right"
+frame = 1
+
+[node name="SwingSword" type="AudioStreamPlayer2D" parent="." unique_id=829817277]
+stream = ExtResource("2_023up")
+
+[node name="Hitbox" type="Area2D" parent="." unique_id=1484404742]
+position = Vector2(7.5, -0.5)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=817947306]
+shape = SubResource("RectangleShape2D_023up")
