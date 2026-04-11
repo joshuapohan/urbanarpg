@@ -1,9 +1,12 @@
 [gd_scene format=3 uid="uid://cu87uoawhjeai"]
 
 [ext_resource type="PackedScene" uid="uid://bmk6wssr75fbe" path="res://scenes/adventurer.tscn" id="1_o5qli"]
+[ext_resource type="PackedScene" uid="uid://tj761ybf50cx" path="res://scenes/slime.tscn" id="2_0wfyh"]
 
 [node name="MainNode" type="MainNode" unique_id=171757052]
 
 [node name="Adventurer" parent="." unique_id=2139871302 instance=ExtResource("1_o5qli")]
-speed = 200.0
 position = Vector2(168, 96)
+
+[node name="Slime" parent="." unique_id=1138708019 instance=ExtResource("2_0wfyh")]
+position = Vector2(392, 104)

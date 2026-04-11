@@ -95,6 +95,7 @@ impl Adventurer{
     // --------------------------------------------------------------
     fn attack(&mut self) {
         self.is_attacking = true;
+        self.hitbox_area.as_mut().unwrap().set_monitoring(true);
         self.swing_sword_audio.as_mut().unwrap().play();
         let last_v = self.last_direction;
         self.play_animation("attack".to_string(), last_v);
@@ -107,7 +108,6 @@ impl Adventurer{
         let x = self.hitbox_offset.x;
         let y = self.hitbox_offset.y;
 
-        godot_print!("{:?}", self.last_direction);
         if self.last_direction == Vector2::LEFT {
             self.hitbox_area.as_mut().unwrap().set_position(Vector2 { x: -x, y: y });
         } else if self.last_direction == Vector2::RIGHT {
@@ -124,6 +124,14 @@ impl Adventurer{
     fn on_animation_finish(&mut self){
         self.is_attacking = false;
     }
+
+    #[func]
+    fn on_body_entered(&mut self,  body: Gd<Node2D>){
+        if self.is_attacking{
+            godot_print!("Hit");
+        }
+    }
+
 }
 
 #[godot_api]
@@ -154,13 +162,21 @@ impl ICharacterBody2D for Adventurer{
             animated_sprite.connect("animation_finished", &animation_finish_callable);
         }
 
+        // Initialize hitbox callbacks
+        let on_body_entered_callback = Callable::from_object_method(&self.base(), "on_body_entered");
+        if let Some(hitbox) = &mut self.hitbox_area{
+            hitbox.connect("body_entered", &on_body_entered_callback);
+        }
+
         // Initialize hitbox
         self.hitbox_offset = self.hitbox_area.as_ref().unwrap().get_position();
     }
 
-    fn process(&mut self, delta: f64){
+    fn physics_process(&mut self, delta: f64){
+        self.hitbox_area.as_mut().unwrap().set_monitoring(false);
+
         self.process_movement(delta);
 
         self.base_mut().move_and_slide();
-    }    
+    }
 }
