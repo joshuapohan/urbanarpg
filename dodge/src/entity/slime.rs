@@ -1,5 +1,8 @@
+use godot::classes::tween::{EaseType, TransitionType};
 use godot::prelude::*;
-use godot::classes::{AnimatedSprite2D, Area2D, CharacterBody2D, ICharacterBody2D};
+use godot::classes::{AnimatedSprite2D, Area2D, AudioStreamPlayer2D, CharacterBody2D, CollisionShape2D, ICharacterBody2D, Tween};
+
+use crate::ui::healthbar::HealthBar;
 
 
 #[derive(GodotClass)]
@@ -7,39 +10,48 @@ use godot::classes::{AnimatedSprite2D, Area2D, CharacterBody2D, ICharacterBody2D
 pub struct Slime{
     #[export]
     speed: f32,
-    velocity: Vector2,
-
+    #[export]
+    health: i32,
+    #[export]
+    knockback_force: f32,
+    #[export]
+    alive: bool,
+    
     animated_sprite: Option<Gd<AnimatedSprite2D>>,
+    take_damage_audio: Option<Gd<AudioStreamPlayer2D>>,
+    health_bar_ui: Option<Gd<HealthBar>>,
+    
     sight: Option<Gd<Area2D>>,
     target: Option<Gd<Node2D>>,
-
+    
+    
+    
     base: Base<CharacterBody2D>
 }
 
 #[godot_api]
 impl Slime {
-    fn play_animation(&mut self, velocity: Vector2){
-        if velocity.length() > 0.0 {
-        } else {
+    fn play_animation(&mut self){
+        if self.alive {
             self.animated_sprite.as_mut().unwrap().set_animation("idle");
             self.animated_sprite.as_mut().unwrap().play();
-        }        
+        }
     }
-
+    
     #[func]
     fn on_sight_entered(&mut self, body: Gd<Node2D>){
         godot_print!("player entered");
-
+        
         if body.get_name() == "Adventurer"{
             godot_print!("Adventurer entered");
             self.target = Some(body);
         }
     }
-
+    
     #[func]
     fn on_sight_exited(&mut self, body: Gd<Node2D>){
         godot_print!("player exited");
-
+        
         if body.get_name() == "Adventurer"{
             godot_print!("Adventurer exited");
             self.target = None;
@@ -51,14 +63,65 @@ impl Slime {
         if self.target.as_ref().unwrap().is_instance_valid(){
             let direction = self.speed *  (self.target.as_ref().unwrap().get_position() - self.base().get_position()).normalized();
             let current_pos = self.base().get_position();
-            let new_pos = (current_pos + direction * delta as f32);            
+            let new_pos = current_pos + direction * delta as f32;            
             self.base_mut().set_position(new_pos);
-
+            
             self.animated_sprite.as_mut().unwrap().set_animation("attack");
             self.animated_sprite.as_mut().unwrap().play();
         }
     }
+    
+    pub fn take_damage(&mut self, damage: i32, attacker_position: Vector2){
+        self.health -= damage;
+        
+        let hb = self.health_bar_ui.as_mut().unwrap();
+        hb.bind_mut().update_health(self.health);
 
+        if self.health <= 0 {
+            self.die();
+        } else {            
+            self.take_damage_audio.as_mut().unwrap().play();
+            
+            let knockback_direction =   (self.base().get_position() - attacker_position).normalized();
+            let current_pos = self.base().get_position();
+            let new_pos = current_pos + knockback_direction * self.knockback_force;     
+            
+            let obj: Gd<Object> = self.to_gd().upcast::<Object>();
+            let mut tween = self.base_mut().create_tween();
+            tween.set_ease(EaseType::IN);
+            tween.set_trans(TransitionType::CUBIC);
+            tween.tween_property(
+                &obj,
+                "position",
+                &new_pos.to_variant(),
+                0.15,
+            );
+        }        
+    }
+    
+    fn die(&mut self){
+        self.alive = false;
+        self.animated_sprite.as_mut().unwrap().set_animation("die");
+        self.animated_sprite.as_mut().unwrap().play();
+        self.take_damage_audio.as_mut().unwrap().set_pitch_scale(0.5);
+        self.take_damage_audio.as_mut().unwrap().play();
+
+        // disable collision
+        if let Some(node) = self.base().get_node_or_null("CollisionShape2D"){
+            let mut collision_2d: Gd<CollisionShape2D> = node.try_cast().unwrap();
+            collision_2d.set_deferred("disabled", &Variant::from(true));
+        } else {
+            godot_error!("Unable to find collision node for slime")
+        }
+        if let Some(node) = self.base().get_node_or_null("Sight/CollisionShape2D"){
+            let mut collision_2d: Gd<CollisionShape2D> = node.try_cast().unwrap();
+            collision_2d.set_deferred("disabled", &Variant::from(true));
+        } else {
+            godot_error!("Unable to find collision node for slime")
+        }                    
+    }
+    
+    
 }
 
 #[godot_api]
@@ -66,42 +129,48 @@ impl ICharacterBody2D for Slime{
     fn init(base: Base<CharacterBody2D>) -> Self {
         Self{
             base: base,
-
+            
             animated_sprite: None,
+            take_damage_audio: None,
             sight: None,
             target: None,
-
-            velocity: Vector2::ZERO,
+            health_bar_ui: None,
+            
             speed: 100.0,
+            health: 100,
+            knockback_force: 30.0,
+            alive: true,
         }
     }
-
     
-
+    
+    
     fn ready(&mut self){
-
+        
         // Initialize nodes
         self.animated_sprite = self.base().get_node_as::<AnimatedSprite2D>("AnimatedSprite2D").into();
         self.sight = self.base().get_node_as::<Area2D>("Sight").into();
-
-
+        self.take_damage_audio = self.base().get_node_as::<AudioStreamPlayer2D>("TakeDamage").into();
+        self.health_bar_ui = self.base().get_node_as::<HealthBar>("HealthBar").into();
+        
+        
         // Initialize signals
         let on_sight_entered_callback = Callable::from_object_method(&self.base(), "on_sight_entered");
         if let Some(sight) = &mut self.sight{
             sight.connect("body_entered", &on_sight_entered_callback);
         }
-
+        
         let on_sight_exited_callback = Callable::from_object_method(&self.base(), "on_sight_exited");
         if let Some(sight) = &mut self.sight{
             sight.connect("body_exited", &on_sight_exited_callback);
         }        
     }
-
+    
     fn physics_process(&mut self, delta: f64){
-        if self.target.is_some() && self.target.as_ref().unwrap().is_instance_valid(){
+        if self.alive && self.target.is_some() && self.target.as_ref().unwrap().is_instance_valid(){
             self.attack(delta);
         } else {
-            self.play_animation(self.velocity);
+            self.play_animation();
         }
     }
 }

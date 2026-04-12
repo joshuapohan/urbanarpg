@@ -1,6 +1,8 @@
 [gd_scene format=3 uid="uid://tj761ybf50cx"]
 
 [ext_resource type="Texture2D" uid="uid://df0w08hf62evt" path="res://assets/images/slime/Slime_Green.png" id="1_371uh"]
+[ext_resource type="AudioStream" uid="uid://b47un0kr5juck" path="res://assets/audio/353250__zuzek06__slimejump.wav" id="2_p2gj0"]
+[ext_resource type="PackedScene" uid="uid://djvckumk1x4cx" path="res://scenes/ui/healthbar.tscn" id="3_n6pvg"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_g40cl"]
 atlas = ExtResource("1_371uh")
@@ -138,7 +140,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_0l8pv")
 }],
-"loop": true,
+"loop": false,
 "name": &"die",
 "speed": 15.0
 }, {
@@ -167,13 +169,14 @@ size = Vector2(16, 16)
 radius = 150.0
 
 [node name="Slime" type="Slime" unique_id=1138708019]
+knockback_force = 50.0
 scale = Vector2(2, 2)
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=468975709]
 position = Vector2(1.66893e-06, 0)
 sprite_frames = SubResource("SpriteFrames_24adn")
-animation = &"attack"
+animation = &"die"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=197522817]
 shape = SubResource("RectangleShape2D_371uh")
@@ -182,3 +185,9 @@ shape = SubResource("RectangleShape2D_371uh")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sight" unique_id=102248691]
 shape = SubResource("CircleShape2D_371uh")
+
+[node name="TakeDamage" type="AudioStreamPlayer2D" parent="." unique_id=1529888548]
+stream = ExtResource("2_p2gj0")
+
+[node name="HealthBar" parent="." unique_id=217090144 instance=ExtResource("3_n6pvg")]
+position = Vector2(-9, 9)

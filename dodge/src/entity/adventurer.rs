@@ -6,12 +6,17 @@ use godot::obj::Base;
 use godot::prelude::*;
 use godot::classes::{CharacterBody2D, ICharacterBody2D};
 
+use crate::entity::slime::Slime;
+
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]
 pub struct Adventurer {
     #[export]
     speed: f32,
+    #[export]
+    strength: i32,
+
 
     last_direction: Vector2,
     is_attacking: bool,
@@ -125,7 +130,11 @@ impl Adventurer{
     #[func]
     fn on_body_entered(&mut self,  body: Gd<Node2D>){
         if self.is_attacking && body.get_name().contains("Slime"){
-            godot_print!("Hit");
+            if let Ok(mut slime) = body.try_cast::<Slime>(){
+                godot_print!("Slime Hit");
+                let mut bind_slime = slime.bind_mut();
+                bind_slime.take_damage(self.strength, self.base().get_position());
+            }            
         }
     }
 
@@ -136,6 +145,7 @@ impl ICharacterBody2D for Adventurer{
     fn init(base: Base<CharacterBody2D>) -> Self {
         Self{
             speed:50.0,
+            strength: 10,
             hitbox_offset: Vector2::ZERO,
             base: base,
             animated_sprite: None,
