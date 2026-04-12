@@ -37,12 +37,25 @@ impl Slime {
     }
 
     #[func]
+    fn on_sight_exited(&mut self, body: Gd<Node2D>){
+        godot_print!("player exited");
+
+        if body.get_name() == "Adventurer"{
+            godot_print!("Adventurer exited");
+            self.target = None;
+        }
+    }
+    
+    #[func]
     fn attack(&mut self, delta: f64){
         if self.target.as_ref().unwrap().is_instance_valid(){
             let direction = self.speed *  (self.target.as_ref().unwrap().get_position() - self.base().get_position()).normalized();
             let current_pos = self.base().get_position();
             let new_pos = (current_pos + direction * delta as f32);            
             self.base_mut().set_position(new_pos);
+
+            self.animated_sprite.as_mut().unwrap().set_animation("attack");
+            self.animated_sprite.as_mut().unwrap().play();
         }
     }
 
@@ -77,12 +90,18 @@ impl ICharacterBody2D for Slime{
         if let Some(sight) = &mut self.sight{
             sight.connect("body_entered", &on_sight_entered_callback);
         }
+
+        let on_sight_exited_callback = Callable::from_object_method(&self.base(), "on_sight_exited");
+        if let Some(sight) = &mut self.sight{
+            sight.connect("body_exited", &on_sight_exited_callback);
+        }        
     }
 
     fn physics_process(&mut self, delta: f64){
         if self.target.is_some() && self.target.as_ref().unwrap().is_instance_valid(){
             self.attack(delta);
+        } else {
+            self.play_animation(self.velocity);
         }
-        self.play_animation(self.velocity);
     }
 }
