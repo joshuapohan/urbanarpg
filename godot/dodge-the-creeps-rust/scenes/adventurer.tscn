@@ -420,6 +420,9 @@ animations = [{
 "speed": 15.0
 }]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_h70i8"]
+size = Vector2(10, 8)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_023up"]
 size = Vector2(15.5, 15)
 
@@ -433,6 +436,10 @@ texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_3ak1b")
 animation = &"attack_right"
 frame = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=967015824]
+position = Vector2(-1, 4)
+shape = SubResource("RectangleShape2D_h70i8")
 
 [node name="SwingSword" type="AudioStreamPlayer2D" parent="." unique_id=829817277]
 stream = ExtResource("2_023up")

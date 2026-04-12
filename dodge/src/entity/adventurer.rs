@@ -27,7 +27,7 @@ pub struct Adventurer {
 #[godot_api]
 impl Adventurer{
 
-    fn process_movement(&mut self, delta: f64){
+    fn process_movement(&mut self){
         let input = Input::singleton();
 
         if input.is_action_just_pressed("attack(physical)") && !self.is_attacking{
@@ -50,10 +50,7 @@ impl Adventurer{
         self.update_hitbox_offset();
 
         self.process_animation(velocity);
-        let current_pos = self.base().get_position();
-        let new_pos = (current_pos + velocity * delta as f32);
-
-        self.base_mut().set_position(new_pos);
+        self.base_mut().set_velocity(velocity);
     }
 
     fn process_animation(&mut self, velocity: Vector2){
@@ -127,7 +124,7 @@ impl Adventurer{
 
     #[func]
     fn on_body_entered(&mut self,  body: Gd<Node2D>){
-        if self.is_attacking{
+        if self.is_attacking && body.get_name().contains("Slime"){
             godot_print!("Hit");
         }
     }
@@ -172,10 +169,10 @@ impl ICharacterBody2D for Adventurer{
         self.hitbox_offset = self.hitbox_area.as_ref().unwrap().get_position();
     }
 
-    fn physics_process(&mut self, delta: f64){
+    fn physics_process(&mut self, _delta: f64){
         self.hitbox_area.as_mut().unwrap().set_monitoring(false);
 
-        self.process_movement(delta);
+        self.process_movement();
 
         self.base_mut().move_and_slide();
     }

@@ -7,6 +7,10 @@
 
 [node name="Adventurer" parent="." unique_id=2139871302 instance=ExtResource("1_o5qli")]
 position = Vector2(168, 96)
+motion_mode = 1
 
 [node name="Slime" parent="." unique_id=1138708019 instance=ExtResource("2_0wfyh")]
 position = Vector2(392, 104)
+collision_layer = 2
+collision_mask = 0
+motion_mode = 1
