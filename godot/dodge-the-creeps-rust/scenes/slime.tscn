@@ -171,6 +171,9 @@ radius = 150.0
 [node name="Slime" type="Slime" unique_id=1138708019]
 knockback_force = 50.0
 scale = Vector2(2, 2)
+collision_layer = 2
+collision_mask = 0
+motion_mode = 1
 metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=468975709]

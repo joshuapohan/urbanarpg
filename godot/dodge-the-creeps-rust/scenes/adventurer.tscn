@@ -446,8 +446,15 @@ stream = ExtResource("2_023up")
 
 [node name="Hitbox" type="Area2D" parent="." unique_id=1484404742]
 position = Vector2(7.5, -0.5)
+collision_layer = 0
 collision_mask = 2
 metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=817947306]
 shape = SubResource("RectangleShape2D_023up")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1680810169]
+limit_left = 0
+limit_top = 0
+limit_right = 1600
+limit_bottom = 1344
