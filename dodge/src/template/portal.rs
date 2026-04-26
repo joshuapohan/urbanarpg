@@ -16,7 +16,10 @@ pub struct Portal {
 
 #[godot_api]
 impl Portal{
-
+    #[func]
+    pub fn get_portal_target_map_id(&self) -> i32 {
+        return self.target_map_id;
+    }
 }
 
 #[godot_api]

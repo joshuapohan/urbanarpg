@@ -1,16 +1,7 @@
 [gd_scene format=3 uid="uid://cu87uoawhjeai"]
 
-[ext_resource type="PackedScene" uid="uid://bmk6wssr75fbe" path="res://scenes/adventurer.tscn" id="1_o5qli"]
-[ext_resource type="PackedScene" uid="uid://tj761ybf50cx" path="res://scenes/slime.tscn" id="2_0wfyh"]
+[ext_resource type="PackedScene" uid="uid://mnbg022f7p8x" path="res://scenes/levels/level_1.tscn" id="3_sugp2"]
 
 [node name="MainNode" type="MainNode" unique_id=171757052]
 
-[node name="Adventurer" parent="." unique_id=2139871302 instance=ExtResource("1_o5qli")]
-position = Vector2(168, 96)
-motion_mode = 1
-
-[node name="Slime" parent="." unique_id=1138708019 instance=ExtResource("2_0wfyh")]
-position = Vector2(392, 104)
-collision_layer = 2
-collision_mask = 0
-motion_mode = 1
+[node name="CurrentLevel" parent="." unique_id=494037133 instance=ExtResource("3_sugp2")]
