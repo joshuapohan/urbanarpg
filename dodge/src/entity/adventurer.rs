@@ -16,6 +16,10 @@ pub struct Adventurer {
     speed: f32,
     #[export]
     strength: i32,
+    #[export]
+    health: i32,
+    #[export]
+    max_health: i32,
 
 
     last_direction: Vector2,
@@ -138,6 +142,13 @@ impl Adventurer{
         }
     }
 
+    pub fn take_damage(&mut self, damage: i32, attacker_position: Vector2){
+        self.health -= damage;
+        godot_print!("{}", self.health);
+        if self.health <= 0 {
+        } else {            
+        }        
+    }    
 }
 
 #[godot_api]
@@ -153,6 +164,8 @@ impl ICharacterBody2D for Adventurer{
             hitbox_area: None,
             last_direction: Vector2::RIGHT,
             is_attacking: false,
+            max_health: 100,
+            health: 100,
         }
     }
 

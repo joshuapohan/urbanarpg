@@ -168,6 +168,8 @@ size = Vector2(16, 16)
 [sub_resource type="CircleShape2D" id="CircleShape2D_371uh"]
 radius = 150.0
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n6pvg"]
+
 [node name="Slime" type="Slime" unique_id=1138708019]
 knockback_force = 50.0
 scale = Vector2(2, 2)
@@ -194,3 +196,10 @@ stream = ExtResource("2_p2gj0")
 
 [node name="HealthBar" parent="." unique_id=217090144 instance=ExtResource("3_n6pvg")]
 position = Vector2(-9, 9)
+
+[node name="Hitbox" type="Area2D" parent="." unique_id=936302066]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=367863971]
+shape = SubResource("RectangleShape2D_n6pvg")
+
+[node name="AttackTimer" type="Timer" parent="." unique_id=1050909298]

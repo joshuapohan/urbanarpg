@@ -1,7 +1,8 @@
 use godot::classes::tween::{EaseType, TransitionType};
 use godot::prelude::*;
-use godot::classes::{AnimatedSprite2D, Area2D, AudioStreamPlayer2D, CharacterBody2D, CollisionShape2D, ICharacterBody2D, Tween};
+use godot::classes::{AnimatedSprite2D, Area2D, AudioStreamPlayer2D, CharacterBody2D, CollisionShape2D, ICharacterBody2D, Timer, Tween};
 
+use crate::entity::adventurer::Adventurer;
 use crate::ui::healthbar::HealthBar;
 
 
@@ -13,6 +14,8 @@ pub struct Slime{
     #[export]
     health: i32,
     #[export]
+    strength: i32,
+    #[export]
     knockback_force: f32,
     #[export]
     alive: bool,
@@ -20,9 +23,12 @@ pub struct Slime{
     animated_sprite: Option<Gd<AnimatedSprite2D>>,
     take_damage_audio: Option<Gd<AudioStreamPlayer2D>>,
     health_bar_ui: Option<Gd<HealthBar>>,
+    attack_timer: Option<Gd<Timer>>,
     
     sight: Option<Gd<Area2D>>,
     target: Option<Gd<Node2D>>,
+    target_in_attack_range: Option<Gd<Adventurer>>,
+    hitbox_area: Option<Gd<Area2D>>,
     
     
     
@@ -121,7 +127,38 @@ impl Slime {
         }                    
     }
     
+    #[func]
+    fn on_body_entered(&mut self,  body: Gd<Node2D>){
+        if  body.get_name().contains("Adventurer"){
+            if let Ok(mut adventurer) = body.try_cast::<Adventurer>(){
+                godot_print!("Adventurer Hit");
+                {
+                    let mut bind_adventurer = adventurer.bind_mut();
+                    bind_adventurer.take_damage(self.strength, self.base().get_position());
+                }
+                self.target_in_attack_range = Some(adventurer.clone());
+                self.attack_timer.as_mut().unwrap().start();
+            }            
+        }
+    }
+
+    #[func]
+    fn on_body_exited(&mut self,  body: Gd<Node2D>){
+        if body.instance_id() == self.target_in_attack_range.as_ref().unwrap().instance_id() {
+            self.target_in_attack_range = None;
+            self.attack_timer.as_mut().unwrap().stop();
+        }
+    }    
     
+    #[func]
+    fn on_attack_timer_timeout(&mut self){
+        if self.target_in_attack_range.is_some(){
+            let self_pos = self.base().get_position();
+            let damage = self.strength;
+            let mut bind_adventurer = self.target_in_attack_range.as_mut().unwrap().bind_mut();
+            bind_adventurer.take_damage(damage, self_pos);
+        }
+    }    
 }
 
 #[godot_api]
@@ -135,10 +172,14 @@ impl ICharacterBody2D for Slime{
             sight: None,
             target: None,
             health_bar_ui: None,
+            hitbox_area: None,
+            target_in_attack_range: None,
+            attack_timer: None,
             
             speed: 100.0,
             health: 100,
             knockback_force: 30.0,
+            strength: 10,
             alive: true,
         }
     }
@@ -152,6 +193,8 @@ impl ICharacterBody2D for Slime{
         self.sight = self.base().get_node_as::<Area2D>("Sight").into();
         self.take_damage_audio = self.base().get_node_as::<AudioStreamPlayer2D>("TakeDamage").into();
         self.health_bar_ui = self.base().get_node_as::<HealthBar>("HealthBar").into();
+        self.hitbox_area = self.base().get_node_as::<Area2D>("Hitbox").into();
+        self.attack_timer = self.base().get_node_as::<Timer>("AttackTimer").into();
         
         
         // Initialize signals
@@ -163,7 +206,24 @@ impl ICharacterBody2D for Slime{
         let on_sight_exited_callback = Callable::from_object_method(&self.base(), "on_sight_exited");
         if let Some(sight) = &mut self.sight{
             sight.connect("body_exited", &on_sight_exited_callback);
-        }        
+        }
+        
+        // Initialize hitbox callbacks
+        let on_body_entered_callback = Callable::from_object_method(&self.base(), "on_body_entered");
+        if let Some(hitbox) = &mut self.hitbox_area{
+            hitbox.connect("body_entered", &on_body_entered_callback);
+        }
+
+        let on_body_exited_callback = Callable::from_object_method(&self.base(), "on_body_exited");
+        if let Some(hitbox) = &mut self.hitbox_area{
+            hitbox.connect("body_exited", &on_body_exited_callback);
+        }
+
+        // timer callbacks
+        let on_attack_timer_callback = Callable::from_object_method(&self.base(), "on_attack_timer_timeout");
+        if let Some(attack_timer) = &mut self.attack_timer{
+            attack_timer.connect("timeout", &on_attack_timer_callback);
+        }
     }
     
     fn physics_process(&mut self, delta: f64){
