@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://dygeyk7j7d4am" path="res://assets/images/adventurer/Player.png" id="1_i0sav"]
 [ext_resource type="AudioStream" uid="uid://d3e8dhtmbctjs" path="res://assets/audio/530444__mellau__whoosh-short-4.wav" id="2_023up"]
+[ext_resource type="AudioStream" uid="uid://ddy5n2ajfu0gy" path="res://assets/audio/416838__tonsil5__grunt2-death-pain.wav" id="3_h70i8"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2g661"]
 atlas = ExtResource("1_i0sav")
@@ -441,9 +442,6 @@ frame = 1
 position = Vector2(-1, 4)
 shape = SubResource("RectangleShape2D_h70i8")
 
-[node name="SwingSword" type="AudioStreamPlayer2D" parent="." unique_id=829817277]
-stream = ExtResource("2_023up")
-
 [node name="Hitbox" type="Area2D" parent="." unique_id=1484404742]
 position = Vector2(7.5, -0.5)
 collision_layer = 0
@@ -458,3 +456,14 @@ limit_left = 0
 limit_top = 0
 limit_right = 1600
 limit_bottom = 1344
+
+[node name="SwingSwordAudio" type="AudioStreamPlayer2D" parent="." unique_id=829817277]
+stream = ExtResource("2_023up")
+
+[node name="TakeDamageAudio" type="AudioStreamPlayer2D" parent="." unique_id=1624300464]
+position = Vector2(0.25, 0)
+stream = ExtResource("3_h70i8")
+
+[node name="DamageCooldownTimer" type="Timer" parent="." unique_id=281182016]
+wait_time = 0.5
+one_shot = true

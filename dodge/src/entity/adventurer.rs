@@ -2,6 +2,7 @@ use godot::classes::AnimatedSprite2D;
 use godot::classes::Area2D;
 use godot::classes::AudioStreamPlayer2D;
 use godot::classes::Input;
+use godot::classes::Timer;
 use godot::obj::Base;
 use godot::prelude::*;
 use godot::classes::{CharacterBody2D, ICharacterBody2D};
@@ -25,11 +26,15 @@ pub struct Adventurer {
 
     last_direction: Vector2,
     is_attacking: bool,
+    is_invincible: bool,
     hitbox_offset: Vector2,
 
     animated_sprite: Option<Gd<AnimatedSprite2D>>,
     swing_sword_audio: Option<Gd<AudioStreamPlayer2D>>,
+    take_damage_audio: Option<Gd<AudioStreamPlayer2D>>,
     hitbox_area: Option<Gd<Area2D>>,
+    damage_cooldown_timer: Option<Gd<Timer>>,
+
 
     base: Base<CharacterBody2D>    
 }
@@ -144,13 +149,27 @@ impl Adventurer{
     }
 
     pub fn take_damage(&mut self, damage: i32, attacker_position: Vector2){
+        if self.is_invincible {
+            return
+        }
+        self.damage_cooldown_timer.as_mut().unwrap().start();
+        self.take_damage_audio.as_mut().unwrap().play();
         self.health -= damage;
         PlayerStats::singleton().bind_mut().health -= damage;
         godot_print!("{}", self.health);
         if self.health <= 0 {
-        } else {
+        
+        } 
+        else {
+            self.is_invincible = true;
         }
-    }    
+    }
+    
+    #[func]
+    fn on_damage_cooldown_timer_timeout(&mut self){
+        self.is_invincible = false;
+        self.damage_cooldown_timer.as_mut().unwrap().stop();
+    }        
 }
 
 #[godot_api]
@@ -166,9 +185,12 @@ impl ICharacterBody2D for Adventurer{
             base: base,
             animated_sprite: None,
             swing_sword_audio: None,
+            take_damage_audio: None,
             hitbox_area: None,
+            damage_cooldown_timer: None,
             last_direction: Vector2::RIGHT,
             is_attacking: false,
+            is_invincible: false,
             max_health: binding.max_health,
             health: binding.health,
         }
@@ -178,7 +200,9 @@ impl ICharacterBody2D for Adventurer{
 
         // Initialize nodes
         self.animated_sprite = self.base().get_node_as::<AnimatedSprite2D>("AnimatedSprite2D").into();
-        self.swing_sword_audio = self.base().get_node_as::<AudioStreamPlayer2D>("SwingSword").into();
+        self.swing_sword_audio = self.base().get_node_as::<AudioStreamPlayer2D>("SwingSwordAudio").into();
+        self.take_damage_audio = self.base().get_node_as::<AudioStreamPlayer2D>("TakeDamageAudio").into();
+        self.damage_cooldown_timer =  self.base().get_node_as::<Timer>("DamageCooldownTimer").into();
         self.hitbox_area = self.base().get_node_as::<Area2D>("Hitbox").into();
 
         // Initialize signal callbacks
@@ -195,6 +219,12 @@ impl ICharacterBody2D for Adventurer{
 
         // Initialize hitbox
         self.hitbox_offset = self.hitbox_area.as_ref().unwrap().get_position();
+
+        // timer callbacks
+        let on_damage_cooldown_timer_callback = Callable::from_object_method(&self.base(), "on_damage_cooldown_timer_timeout");
+        if let Some(damage_cooldown_timer) = &mut self.damage_cooldown_timer{
+            damage_cooldown_timer.connect("timeout", &on_damage_cooldown_timer_callback);
+        }        
     }
 
     fn physics_process(&mut self, _delta: f64){
