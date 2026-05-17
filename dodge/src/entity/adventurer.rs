@@ -7,6 +7,7 @@ use godot::prelude::*;
 use godot::classes::{CharacterBody2D, ICharacterBody2D};
 
 use crate::entity::slime::Slime;
+use crate::script::playerstats::PlayerStats;
 
 
 #[derive(GodotClass)]
@@ -144,16 +145,20 @@ impl Adventurer{
 
     pub fn take_damage(&mut self, damage: i32, attacker_position: Vector2){
         self.health -= damage;
+        PlayerStats::singleton().bind_mut().health -= damage;
         godot_print!("{}", self.health);
         if self.health <= 0 {
-        } else {            
-        }        
+        } else {
+        }
     }    
 }
 
 #[godot_api]
 impl ICharacterBody2D for Adventurer{
     fn init(base: Base<CharacterBody2D>) -> Self {
+        let singleton= PlayerStats::singleton();
+        let binding = singleton.bind();
+
         Self{
             speed:50.0,
             strength: 10,
@@ -164,8 +169,8 @@ impl ICharacterBody2D for Adventurer{
             hitbox_area: None,
             last_direction: Vector2::RIGHT,
             is_attacking: false,
-            max_health: 100,
-            health: 100,
+            max_health: binding.max_health,
+            health: binding.health,
         }
     }
 
