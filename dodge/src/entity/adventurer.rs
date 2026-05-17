@@ -41,6 +41,8 @@ pub struct Adventurer {
 
 #[godot_api]
 impl Adventurer{
+    #[signal]
+    fn s_death();
 
     fn process_movement(&mut self){
         let input = Input::singleton();
@@ -158,9 +160,8 @@ impl Adventurer{
         PlayerStats::singleton().bind_mut().health -= damage;
         godot_print!("{}", self.health);
         if self.health <= 0 {
-        
-        } 
-        else {
+            self.signals().s_death().emit();
+        } else {
             self.is_invincible = true;
         }
     }
