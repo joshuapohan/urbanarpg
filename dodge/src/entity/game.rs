@@ -2,6 +2,7 @@ use godot::obj::Base;
 use godot::prelude::{GodotClass, godot_api};
 use godot::classes::{CollisionShape2D, INode2D, Node2D};
 use godot::prelude::*;
+use crate::entity::adventurer::Adventurer;
 use crate::template::levelroot::LevelRoot;
 use crate::template::portal::Portal;
 
@@ -13,10 +14,17 @@ struct MainNode {
     base: Base<Node2D>,
 
     current_level: Option<Gd<LevelRoot>>,
+    player: Option<Gd<Adventurer>>,
 }
 
 #[godot_api]
 impl MainNode{
+    #[func]
+    fn on_player_death(&mut self){
+        self.load_level(1);
+
+    }
+
 
     #[func]
     fn on_portal_entered(&mut self, body: Gd<Node2D>){
@@ -57,6 +65,7 @@ impl MainNode{
     fn setup_level(&mut self, node: Gd<LevelRoot>){
         godot_print!("setup_level");
 
+
         self.current_level = Some(node);
         if self.current_level.is_some(){
             let current_level = self.current_level.as_mut().unwrap();
@@ -67,7 +76,13 @@ impl MainNode{
                     cs.connect("body_entered", &on_portal_entered_callback);
                 }
             }            
-        }        
+        }
+
+        // setup player
+        self.player = self.base().get_node_as::<Adventurer>("CurrentLevel/Adventurer").into();
+        let player_death_callable = Callable::from_object_method(&self.base(), "on_player_death");
+        self.player.as_mut().unwrap().connect("s_death", &player_death_callable);
+
     }
 }
 
@@ -77,24 +92,12 @@ impl INode2D for MainNode{
         Self{
             base: base,
             current_level: None,
+            player: None,
         }
     }
 
     fn ready(&mut self) {
         let current_level_node =  self.base().get_node_as::<LevelRoot>("CurrentLevel").into();
         self.setup_level(current_level_node);
-        /*
-        self.current_level = self.base().get_node_as::<LevelRoot>("CurrentLevel").into();
-        if self.current_level.is_some(){
-            let current_level = self.current_level.as_mut().unwrap();
-            let mut cs: Option<Gd<Portal>> = current_level.get_node_as::<Portal>("Portal").into();
-            if cs.is_some() {
-                let on_portal_entered_callback = Callable::from_object_method(&self.base(), "on_portal_entered");
-                if let Some(cs) =  &mut cs{
-                    cs.connect("body_entered", &on_portal_entered_callback);
-                }
-            }            
-        }
-        */
     }
 }
