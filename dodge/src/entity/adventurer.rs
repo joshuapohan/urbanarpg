@@ -27,6 +27,7 @@ pub struct Adventurer {
     last_direction: Vector2,
     is_attacking: bool,
     is_invincible: bool,
+    is_dead: bool,
     hitbox_offset: Vector2,
 
     animated_sprite: Option<Gd<AnimatedSprite2D>>,
@@ -44,6 +45,13 @@ impl Adventurer{
     #[signal]
     fn s_death();
 
+
+    #[func]
+    pub fn reset(&mut self){
+        PlayerStats::singleton().bind_mut().reset();
+        self.health = PlayerStats::singleton().bind_mut().max_health;
+    }
+
     fn process_movement(&mut self){
         let input = Input::singleton();
 
@@ -51,8 +59,8 @@ impl Adventurer{
             self.attack();
         }
 
-        // skip movement if is attacking
-        if self.is_attacking{
+        // skip movement if is attacking or dead
+        if self.is_attacking || self.is_dead{
             return;
         }        
 
@@ -104,6 +112,11 @@ impl Adventurer{
         }        
     }
 
+    fn play_one_time_animation(&mut self, name: String){
+        self.animated_sprite.as_mut().unwrap().set_animation(name.as_str());
+        self.animated_sprite.as_mut().unwrap().play();
+    }
+
     // --------------------------------------------------------------
     //    ATTACKING
     // --------------------------------------------------------------
@@ -137,6 +150,11 @@ impl Adventurer{
     #[func]    
     fn on_animation_finish(&mut self){
         self.is_attacking = false;
+        let current_anim = self.animated_sprite.as_ref().unwrap().get_animation();
+        if current_anim == "die" {
+            godot_print!("Player Death Signal Emitted");
+            self.signals().s_death().emit();
+        }
     }
 
     #[func]
@@ -151,7 +169,7 @@ impl Adventurer{
     }
 
     pub fn take_damage(&mut self, damage: i32, attacker_position: Vector2){
-        if self.is_invincible {
+        if self.is_invincible || self.is_dead {
             return
         }
         self.damage_cooldown_timer.as_mut().unwrap().start();
@@ -160,7 +178,11 @@ impl Adventurer{
         PlayerStats::singleton().bind_mut().health -= damage;
         godot_print!("{}", self.health);
         if self.health <= 0 {
-            self.signals().s_death().emit();
+            godot_print!("Player Died");
+            self.play_one_time_animation("die".to_string());
+            self.is_dead = true;
+            self.base_mut().set_velocity(Vector2::ZERO);
+            //self.signals().s_death().emit();
         } else {
             self.is_invincible = true;
         }
@@ -192,6 +214,7 @@ impl ICharacterBody2D for Adventurer{
             last_direction: Vector2::RIGHT,
             is_attacking: false,
             is_invincible: false,
+            is_dead: false,
             max_health: binding.max_health,
             health: binding.health,
         }

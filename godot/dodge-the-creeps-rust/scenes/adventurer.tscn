@@ -278,8 +278,8 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_gqbgy")
 }],
-"loop": true,
-"name": &"dying",
+"loop": false,
+"name": &"die",
 "speed": 15.0
 }, {
 "frames": [{
@@ -434,9 +434,9 @@ metadata/_edit_group_ = true
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=727604035]
 texture_filter = 1
+position = Vector2(0, -0.25)
 sprite_frames = SubResource("SpriteFrames_3ak1b")
-animation = &"attack_right"
-frame = 1
+animation = &"idle_down"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=967015824]
 position = Vector2(-1, 4)

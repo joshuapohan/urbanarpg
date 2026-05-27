@@ -9,6 +9,14 @@ pub struct PlayerStats{
 }
 
 #[godot_api]
+impl PlayerStats {
+    #[func]
+    pub fn reset(&mut self){
+        self.health = self.max_health;
+    }
+}
+
+#[godot_api]
 impl IObject for PlayerStats{
     fn init(base: Base<Object>) -> Self {
         Self {

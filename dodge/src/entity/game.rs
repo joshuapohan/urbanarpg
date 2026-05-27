@@ -21,8 +21,9 @@ struct MainNode {
 impl MainNode{
     #[func]
     fn on_player_death(&mut self){
-        self.load_level(1);
-
+        godot_print!("Player Death Signal Received");
+        self.base_mut().call_deferred("load_level", &[1.to_variant()]);
+        self.player.as_mut().unwrap().bind_mut().reset();        
     }
 
 
@@ -46,6 +47,7 @@ impl MainNode{
      #[func]
     fn load_level(&mut self, level_id: i32){
         godot_print!("load_level");
+        self.player = None;
         if self.current_level.is_some(){
 
             // clean up current map
@@ -58,6 +60,7 @@ impl MainNode{
             current_level.set_name("CurrentLevel");
             self.base_mut().add_child(&current_level);
 
+            
             self.setup_level(current_level);
         }
     }
@@ -68,21 +71,31 @@ impl MainNode{
 
         self.current_level = Some(node);
         if self.current_level.is_some(){
-            let current_level = self.current_level.as_mut().unwrap();
-            let mut cs: Option<Gd<Portal>> = current_level.get_node_as::<Portal>("Portal").into();
-            if cs.is_some() {
+            let mut portal: Option<Gd<Portal>> = self.current_level.as_mut().unwrap().get_node_as::<Portal>("Portal").into();
+            let mut player: Option<Gd<Adventurer>> = self.current_level.as_mut().unwrap().get_node_as::<Adventurer>("Adventurer").into();
+
+            if let Some(gd_portal) =  &mut portal{
                 let on_portal_entered_callback = Callable::from_object_method(&self.base(), "on_portal_entered");
-                if let Some(cs) =  &mut cs{
-                    cs.connect("body_entered", &on_portal_entered_callback);
-                }
-            }            
+                gd_portal.connect("body_entered", &on_portal_entered_callback);
+            }
+
+            if let Some(gd_player) =  &mut player{
+                let on_player_death_callback = Callable::from_object_method(&self.base(), "on_player_death");
+                gd_player.connect("s_death", &on_player_death_callback);
+            }
+            self.player = player;
+
+            /* 
+            let player_death_callable = Callable::from_object_method(&self.base(), "on_player_death");
+            let already_connected = player.as_ref().unwrap().is_connected("s_death", &player_death_callable);
+            godot_print!("already connected: {}", already_connected);
+            if player.as_ref().unwrap().is_connected("s_death", &player_death_callable) {
+                player.as_mut().unwrap().disconnect("s_death", &player_death_callable);
+            }
+            player.as_mut().unwrap().connect("s_death", &player_death_callable);
+            godot_print!("connected: {}", player.as_ref().unwrap().is_connected("s_death", &player_death_callable));            
+            */
         }
-
-        // setup player
-        self.player = self.base().get_node_as::<Adventurer>("CurrentLevel/Adventurer").into();
-        let player_death_callable = Callable::from_object_method(&self.base(), "on_player_death");
-        self.player.as_mut().unwrap().connect("s_death", &player_death_callable);
-
     }
 }
 
