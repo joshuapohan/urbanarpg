@@ -51,6 +51,7 @@ impl MainNode{
         if self.current_level.is_some(){
 
             // clean up current map
+            self.current_level.as_mut().unwrap().set_name("OldLevel");
             self.current_level.as_mut().unwrap().queue_free();
 
             // change level
