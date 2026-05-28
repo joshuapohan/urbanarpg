@@ -20,10 +20,23 @@ struct MainNode {
 #[godot_api]
 impl MainNode{
     #[func]
+    fn on_player_death_timeout(&mut self){
+        godot_print!("Player Death Signal Timeout");
+        self.base_mut().call_deferred("load_level", &[1.to_variant()]);
+        self.player.as_mut().unwrap().bind_mut().reset();  
+    }
+
+    #[func]
     fn on_player_death(&mut self){
         godot_print!("Player Death Signal Received");
+        let mut tree = self.base().get_tree();
+        let mut timer = tree.create_timer(1.0);
+        let callable = Callable::from_object_method(&self.base(), "on_player_death_timeout");
+        timer.connect("timeout", &callable);
+        /* 
         self.base_mut().call_deferred("load_level", &[1.to_variant()]);
         self.player.as_mut().unwrap().bind_mut().reset();        
+        */        
     }
 
 
