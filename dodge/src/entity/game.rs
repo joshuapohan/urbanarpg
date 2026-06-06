@@ -105,7 +105,6 @@ impl MainNode{
     fn setup_level(&mut self, node: Gd<LevelRoot>){
         godot_print!("setup_level");
 
-
         self.current_level = Some(node);
         if self.current_level.is_some(){
             let mut portal: Option<Gd<Portal>> = self.current_level.as_mut().unwrap().get_node_as::<Portal>("Portal").into();
@@ -122,16 +121,9 @@ impl MainNode{
             }
             self.player = player;
 
-            /* 
-            let player_death_callable = Callable::from_object_method(&self.base(), "on_player_death");
-            let already_connected = player.as_ref().unwrap().is_connected("s_death", &player_death_callable);
-            godot_print!("already connected: {}", already_connected);
-            if player.as_ref().unwrap().is_connected("s_death", &player_death_callable) {
-                player.as_mut().unwrap().disconnect("s_death", &player_death_callable);
-            }
-            player.as_mut().unwrap().connect("s_death", &player_death_callable);
-            godot_print!("connected: {}", player.as_ref().unwrap().is_connected("s_death", &player_death_callable));            
-            */
+            let health_changed_callable = Callable::from_object_method(&self.hud.as_ref().unwrap(), "update_health");
+            self.player.as_mut().unwrap().connect("s_health_changes", &health_changed_callable);
+
         }
     }
 }
@@ -159,5 +151,6 @@ impl INode2D for MainNode{
 
         let current_level_node =  self.base().get_node_as::<LevelRoot>("CurrentLevel").into();
         self.setup_level(current_level_node);
+
     }
 }

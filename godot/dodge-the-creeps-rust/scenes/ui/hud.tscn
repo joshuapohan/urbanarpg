@@ -1,6 +1,38 @@
 [gd_scene format=3 uid="uid://dpl8cymntwtho"]
 
+[ext_resource type="Texture2D" uid="uid://cbhbqcwqm4tcs" path="res://assets/images/ui/heart_full.png" id="1_0mwgc"]
+
 [node name="HUD" type="HUD" unique_id=1571211711]
+
+[node name="HeartsContainer" type="HBoxContainer" parent="." unique_id=759868702]
+offset_right = 96.0
+offset_bottom = 16.0
+scale = Vector2(3, 3)
+
+[node name="Heart1" type="TextureRect" parent="HeartsContainer" unique_id=1233052794]
+layout_mode = 2
+texture = ExtResource("1_0mwgc")
+stretch_mode = 2
+
+[node name="Heart2" type="TextureRect" parent="HeartsContainer" unique_id=2077065135]
+layout_mode = 2
+texture = ExtResource("1_0mwgc")
+stretch_mode = 2
+
+[node name="Heart3" type="TextureRect" parent="HeartsContainer" unique_id=65558057]
+layout_mode = 2
+texture = ExtResource("1_0mwgc")
+stretch_mode = 2
+
+[node name="Heart4" type="TextureRect" parent="HeartsContainer" unique_id=146317895]
+layout_mode = 2
+texture = ExtResource("1_0mwgc")
+stretch_mode = 2
+
+[node name="Heart5" type="TextureRect" parent="HeartsContainer" unique_id=156960993]
+layout_mode = 2
+texture = ExtResource("1_0mwgc")
+stretch_mode = 2
 
 [node name="FadeOverlay" type="ColorRect" parent="." unique_id=975018434]
 modulate = Color(1, 1, 1, 0)

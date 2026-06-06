@@ -21,8 +21,8 @@ impl IObject for PlayerStats{
     fn init(base: Base<Object>) -> Self {
         Self {
             base,
-            health: 10,
-            max_health: 10,
+            health: 100,
+            max_health: 100,
         }
     }
 }

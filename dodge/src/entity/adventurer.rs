@@ -45,11 +45,17 @@ impl Adventurer{
     #[signal]
     fn s_death();
 
+    #[signal]
+    fn s_health_changes(new_health: i32);
+
 
     #[func]
     pub fn reset(&mut self){
+        godot_print!("Player reset");
         PlayerStats::singleton().bind_mut().reset();
         self.health = PlayerStats::singleton().bind_mut().max_health;
+        let new_health = self.health;
+        self.signals().s_health_changes().emit(new_health);   
     }
 
     fn process_movement(&mut self){
@@ -172,11 +178,20 @@ impl Adventurer{
         if self.is_invincible || self.is_dead {
             return
         }
+        
         self.damage_cooldown_timer.as_mut().unwrap().start();
         self.take_damage_audio.as_mut().unwrap().play();
+
+
+        // health calculation and signals
         self.health -= damage;
+        let new_health = self.health;     
         PlayerStats::singleton().bind_mut().health -= damage;
+        self.signals().s_health_changes().emit(new_health);   
+
         godot_print!("{}", self.health);
+
+        // check for death
         if self.health <= 0 {
             godot_print!("Player Died");
             self.play_one_time_animation("die".to_string());
@@ -229,6 +244,9 @@ impl ICharacterBody2D for Adventurer{
         self.damage_cooldown_timer =  self.base().get_node_as::<Timer>("DamageCooldownTimer").into();
         self.hitbox_area = self.base().get_node_as::<Area2D>("Hitbox").into();
 
+
+        godot_print!("Current singleton {}", self.health);
+        
         // Initialize signal callbacks
         let animation_finish_callable = Callable::from_object_method(&self.base(), "on_animation_finish");
         if let Some(animated_sprite) = &mut self.animated_sprite{
