@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://dr2ejixib4uen"]
+
+[ext_resource type="Texture2D" uid="uid://4aemeqp5cjn7" path="res://assets/images/item/Heart.png" id="1_tgxxw"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_tgxxw"]
+size = Vector2(32, 32)
+
+[node name="HealthPickup" type="HealthPickup" unique_id=613859024]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1551519664]
+scale = Vector2(3, 3)
+texture = ExtResource("1_tgxxw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1194480402]
+shape = SubResource("RectangleShape2D_tgxxw")

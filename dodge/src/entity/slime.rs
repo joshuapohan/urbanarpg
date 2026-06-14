@@ -104,6 +104,10 @@ impl Slime {
             );
         }        
     }
+
+    pub fn drop_item(){
+
+    }
     
     fn die(&mut self){
         self.alive = false;
@@ -124,7 +128,13 @@ impl Slime {
             collision_2d.set_deferred("disabled", &Variant::from(true));
         } else {
             godot_error!("Unable to find collision node for slime")
-        }                    
+        }
+        if let Some(node) = self.base().get_node_or_null("Hitbox/CollisionShape2D"){
+            let mut collision_2d: Gd<CollisionShape2D> = node.try_cast().unwrap();
+            collision_2d.set_deferred("disabled", &Variant::from(true));
+        } else {
+            godot_error!("Unable to find collision node for slime")
+        }             
     }
     
     #[func]

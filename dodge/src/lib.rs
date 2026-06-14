@@ -10,3 +10,4 @@ mod scene;
 mod ui;
 mod template;
 mod script;
+mod item;

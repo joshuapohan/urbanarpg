@@ -174,6 +174,13 @@ impl Adventurer{
         }
     }
 
+    pub fn heal(&mut self, heal_amount: i32){
+        self.health += heal_amount;
+        let new_health = self.health;     
+        PlayerStats::singleton().bind_mut().health += heal_amount;
+        self.signals().s_health_changes().emit(new_health);         
+    }
+
     pub fn take_damage(&mut self, damage: i32, attacker_position: Vector2){
         if self.is_invincible || self.is_dead {
             return
