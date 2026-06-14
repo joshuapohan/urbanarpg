@@ -175,6 +175,9 @@ impl Adventurer{
     }
 
     pub fn heal(&mut self, heal_amount: i32){
+        if self.health + heal_amount > self.max_health{
+            return
+        }
         self.health += heal_amount;
         let new_health = self.health;     
         PlayerStats::singleton().bind_mut().health += heal_amount;

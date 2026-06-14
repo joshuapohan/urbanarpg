@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://dr2ejixib4uen"]
 
 [ext_resource type="Texture2D" uid="uid://4aemeqp5cjn7" path="res://assets/images/item/Heart.png" id="1_tgxxw"]
+[ext_resource type="AudioStream" uid="uid://d0o43gherk2ra" path="res://assets/audio/135936__bradwesson__collectcoin.wav" id="2_ry323"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_tgxxw"]
 size = Vector2(32, 32)
@@ -13,3 +14,6 @@ texture = ExtResource("1_tgxxw")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1194480402]
 shape = SubResource("RectangleShape2D_tgxxw")
+
+[node name="PickupAudio" type="AudioStreamPlayer2D" parent="." unique_id=1644974534]
+stream = ExtResource("2_ry323")
