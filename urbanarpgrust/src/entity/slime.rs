@@ -273,5 +273,6 @@ impl ICharacterBody2D for Slime{
         } else {
             self.play_animation();
         }
+        self.base_mut().move_and_slide();
     }
 }
