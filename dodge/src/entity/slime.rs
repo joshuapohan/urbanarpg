@@ -1,10 +1,15 @@
 use godot::classes::tween::{EaseType, TransitionType};
 use godot::prelude::*;
 use godot::classes::{AnimatedSprite2D, Area2D, AudioStreamPlayer2D, CharacterBody2D, CollisionShape2D, ICharacterBody2D, Timer, Tween};
+use rand::Rng;
 
 use crate::entity::adventurer::Adventurer;
+use crate::template::levelroot::LevelRoot;
 use crate::ui::healthbar::HealthBar;
 
+
+const DROPS: [&str;1] = ["health"];
+const DROP_RATE: f32 = 0.5;
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]
@@ -19,6 +24,11 @@ pub struct Slime{
     knockback_force: f32,
     #[export]
     alive: bool,
+
+    #[export]
+    drop_scenes: Array<Gd<PackedScene>>,
+    #[export]
+    drop_chances: Array<f32>,
     
     animated_sprite: Option<Gd<AnimatedSprite2D>>,
     take_damage_audio: Option<Gd<AudioStreamPlayer2D>>,
@@ -105,8 +115,21 @@ impl Slime {
         }        
     }
 
-    pub fn drop_item(){
-
+    #[func]
+    fn drop_item(&mut self){
+        let mut rng = rand::thread_rng();
+        let roll = rng.gen_range(0.0..100.0);
+        let mut cumulative_chance = 0.0;
+        for i in 0..self.drop_scenes.len(){
+            cumulative_chance += self.drop_chances.at(i);
+            if roll < cumulative_chance {
+                godot_print!("Slime dropping item {}", i);
+                let mut drop = self.drop_scenes.at(i).instantiate_as::<Area2D>();
+                drop.set_position(self.base().get_position());
+                self.base().get_parent().unwrap().get_parent().unwrap().cast::<LevelRoot>().call_deferred("add_child", &[drop.to_variant()]);
+                break;
+            }            
+        }
     }
     
     fn die(&mut self){
@@ -134,7 +157,8 @@ impl Slime {
             collision_2d.set_deferred("disabled", &Variant::from(true));
         } else {
             godot_error!("Unable to find collision node for slime")
-        }             
+        }
+        self.drop_item();            
     }
     
     #[func]
@@ -168,7 +192,9 @@ impl Slime {
             let mut bind_adventurer = self.target_in_attack_range.as_mut().unwrap().bind_mut();
             bind_adventurer.take_damage(damage, self_pos);
         }
-    }    
+    }
+    
+
 }
 
 #[godot_api]
@@ -185,6 +211,8 @@ impl ICharacterBody2D for Slime{
             hitbox_area: None,
             target_in_attack_range: None,
             attack_timer: None,
+            drop_chances: Array::new(),
+            drop_scenes: Array::new(),
             
             speed: 100.0,
             health: 100,

@@ -1,6 +1,7 @@
 [gd_scene format=3 uid="uid://tj761ybf50cx"]
 
 [ext_resource type="Texture2D" uid="uid://df0w08hf62evt" path="res://assets/images/slime/Slime_Green.png" id="1_371uh"]
+[ext_resource type="PackedScene" uid="uid://dr2ejixib4uen" path="res://scenes/item/healthpickup.tscn" id="1_pjw23"]
 [ext_resource type="AudioStream" uid="uid://b47un0kr5juck" path="res://assets/audio/353250__zuzek06__slimejump.wav" id="2_p2gj0"]
 [ext_resource type="PackedScene" uid="uid://djvckumk1x4cx" path="res://scenes/ui/healthbar.tscn" id="3_n6pvg"]
 
@@ -172,6 +173,9 @@ radius = 150.0
 
 [node name="Slime" type="Slime" unique_id=1138708019]
 knockback_force = 50.0
+drop_scenes = Array[PackedScene]([ExtResource("1_pjw23")])
+drop_chances = Array[float]([50.0])
+position = Vector2(1, 0)
 scale = Vector2(2, 2)
 collision_layer = 2
 collision_mask = 0
