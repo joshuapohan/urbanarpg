@@ -15,6 +15,8 @@ const DROP_RATE: f32 = 0.5;
 #[class(base=CharacterBody2D)]
 pub struct Slime{
     #[export]
+    name: GString,
+    #[export]
     speed: f32,
     #[export]
     health: i32,
@@ -219,6 +221,7 @@ impl ICharacterBody2D for Slime{
             knockback_force: 30.0,
             strength: 10,
             alive: true,
+            name: "Slimo".to_gstring(),
         }
     }
     
