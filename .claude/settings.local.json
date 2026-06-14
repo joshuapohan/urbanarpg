@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(echo BINDGEN_EXTRA_CLANG_ARGS=$BINDGEN_EXTRA_CLANG_ARGS:*)"
-    ]
-  }
-}

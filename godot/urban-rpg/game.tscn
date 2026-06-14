@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://c0l8xxaogf4pw"]
+
+[ext_resource type="Texture2D" uid="uid://bfg3wwef68i1l" path="res://art/enemyFlyingAlt_1.png" id="1_ryrav"]
+[ext_resource type="Texture2D" uid="uid://b4x4lg0qo55l" path="res://art/enemyFlyingAlt_2.png" id="2_eow3j"]
+[ext_resource type="Texture2D" uid="uid://cv821dkpr8nfx" path="res://art/enemySwimming_1.png" id="3_j5wjh"]
+[ext_resource type="Texture2D" uid="uid://8to8d3wrftte" path="res://art/enemySwimming_2.png" id="4_vef74"]
+[ext_resource type="Texture2D" uid="uid://bc3h6lwsf14dx" path="res://art/enemyWalking_1.png" id="5_hve3p"]
+[ext_resource type="Texture2D" uid="uid://bra4djahakag" path="res://art/enemyWalking_2.png" id="6_mfdv2"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_pcqmr"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_ryrav")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_eow3j")
+}],
+"loop": true,
+"name": &"fly",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_j5wjh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_vef74")
+}],
+"loop": true,
+"name": &"swim",
+"speed": 3.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_hve3p")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_mfdv2")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 3.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_b3mxk"]
+radius = 41.0
+height = 98.0
+
+[sub_resource type="PackedScene" id="PackedScene_iotsf"]
+_bundled = {
+"conn_count": 0,
+"conns": PackedInt32Array(),
+"editable_instances": [],
+"id_paths": [PackedInt32Array(), PackedInt32Array(), PackedInt32Array()],
+"names": PackedStringArray("Mob", "Mob", "collision_mask", "gravity_scale", "metadata/_edit_group_", "AnimatedSprite2D", "AnimatedSprite2D", "scale", "sprite_frames", "animation", "VisibleOnScreenNotifier2D", "VisibleOnScreenNotifier2D", "CollisionShape2D", "CollisionShape2D", "rotation", "shape"),
+"node_count": 4,
+"node_ids": PackedInt32Array(661612741, 85808254, 2136062552, 981471286),
+"node_paths": [NodePath("."), NodePath("."), NodePath(".")],
+"nodes": PackedInt32Array(-1, -1, 1, 0, -1, 3, 2, 0, 3, 1, 4, 2, 0, 1073741824, 0, 6, 5, -1, 3, 7, 3, 8, 4, 9, 5, 0, 1073741825, 0, 11, 10, -1, 0, 0, 1073741826, 0, 13, 12, -1, 2, 14, 6, 15, 7, 0),
+"variants": [0, 0.0, true, Vector2(0.75, 0.75), SubResource("SpriteFrames_pcqmr"), &"fly", 1.5707964, SubResource("CapsuleShape2D_b3mxk")],
+"version": 3
+}
+
+[node name="Game" type="Game" unique_id=1836865999]
+mob_scene = SubResource("PackedScene_iotsf")
+
+[node name="Timer" type="Timer" parent="." unique_id=26916042]
+
+[node name="Timer2" type="Timer" parent="." unique_id=1998497720]

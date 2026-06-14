@@ -1,7 +1,7 @@
 [env]
 LIBCLANG_PATH = "C:/Program Files/LLVM/bin"
 # comment to target DLL for godot, uncomment to build wasm
-#BINDGEN_EXTRA_CLANG_ARGS = "--target=wasm32-unknown-emscripten --sysroot=C:/Users/JO/Documents/dev/emsdk/upstream/emscripten/cache/sysroot"
+BINDGEN_EXTRA_CLANG_ARGS = "--target=wasm32-unknown-emscripten --sysroot=C:/Users/JO/Documents/dev/emsdk/upstream/emscripten/cache/sysroot"
 
 [target.wasm32-unknown-emscripten]
 rustflags = [

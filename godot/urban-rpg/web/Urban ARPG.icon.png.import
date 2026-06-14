@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://d35n4ldkgj0cm"
-path="res://.godot/imported/Dodge the Creeps Rust.icon.png-f94041b485b3e9d5b6a2dd6f3320c38b.ctex"
+uid="uid://cy71ykhvulx6r"
+path="res://.godot/imported/Urban ARPG.icon.png-ca02f2eb17b127bbde566d1bc1f040cf.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Dodge the Creeps Rust.icon.png"
-dest_files=["res://.godot/imported/Dodge the Creeps Rust.icon.png-f94041b485b3e9d5b6a2dd6f3320c38b.ctex"]
+source_file="res://web/Urban ARPG.icon.png"
+dest_files=["res://.godot/imported/Urban ARPG.icon.png-ca02f2eb17b127bbde566d1bc1f040cf.ctex"]
 
 [params]
 

@@ -1,0 +1,16 @@
+[configuration]
+entry_symbol = "gdext_rust_init"
+compatibility_minimum = 4.1
+reloadable = true
+
+[libraries]
+linux.debug.x86_64 =     "res://../../urbanarpgrust/target/debug/lib/urbanarpgrust.so"
+linux.release.x86_64 =   "res://../../urbanarpgrust/target/release/lib/urbanarpgrust.so"
+windows.debug.x86_64 =   "res://../../urbanarpgrust/target/debug/urbanarpgrust.dll"
+windows.release.x86_64 = "res://../../urbanarpgrust/target/release/urbanarpgrust.dll"
+macos.debug =            "res://../../urbanarpgrust/target/debug/lib/urbanarpgrust.dylib"
+macos.release =          "res://../../urbanarpgrust/target/release/lib/urbanarpgrust.dylib"
+macos.debug.arm64 =      "res://../../urbanarpgrust/target/debug/lib/urbanarpgrust.dylib"
+macos.release.arm64 =    "res://../../urbanarpgrust/target/release/lib/urbanarpgrust.dylib"
+web.debug.wasm32 = "res://../../urbanarpgrust/target/wasm32-unknown-emscripten/debug/urbanarpgrust.wasm"
+web.release.wasm32 = "res://../../urbanarpgrust/target/wasm32-unknown-emscripten/release/urbanarpgrust.wasm"

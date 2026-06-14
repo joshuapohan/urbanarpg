@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cnpxjp8y3kl84"
-path="res://.godot/imported/Dodge the Creeps Rust.apple-touch-icon.png-a16655b82b09f9af572ca866014f12c3.ctex"
+uid="uid://c202q5wevx1v0"
+path="res://.godot/imported/Urban ARPG.apple-touch-icon.png-20c7d76699218761beedd9cd1278536c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Dodge the Creeps Rust.apple-touch-icon.png"
-dest_files=["res://.godot/imported/Dodge the Creeps Rust.apple-touch-icon.png-a16655b82b09f9af572ca866014f12c3.ctex"]
+source_file="res://web/Urban ARPG.apple-touch-icon.png"
+dest_files=["res://.godot/imported/Urban ARPG.apple-touch-icon.png-20c7d76699218761beedd9cd1278536c.ctex"]
 
 [params]
 
