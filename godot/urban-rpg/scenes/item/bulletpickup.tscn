@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://bw6la4k3w2ekm"]
+
+[ext_resource type="Texture2D" uid="uid://4iv3kx1be27b" path="res://assets/images/item/Arrow.png" id="1_nvvkw"]
+[ext_resource type="AudioStream" uid="uid://d0o43gherk2ra" path="res://assets/audio/135936__bradwesson__collectcoin.wav" id="2_ty53l"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ty53l"]
+
+[node name="Bulletpickup" type="BulletPickup" unique_id=1857889947]
+scale = Vector2(2, 2)
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=326176755]
+texture = ExtResource("1_nvvkw")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1538780395]
+shape = SubResource("CircleShape2D_ty53l")
+
+[node name="PickupAudio" type="AudioStreamPlayer2D" parent="." unique_id=578989695]
+stream = ExtResource("2_ty53l")

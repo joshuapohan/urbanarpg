@@ -180,6 +180,9 @@ impl Slime {
 
     #[func]
     fn on_body_exited(&mut self,  body: Gd<Node2D>){
+        if self.target_in_attack_range.is_none(){
+            return
+        }
         if body.instance_id() == self.target_in_attack_range.as_ref().unwrap().instance_id() {
             self.target_in_attack_range = None;
             self.attack_timer.as_mut().unwrap().stop();
