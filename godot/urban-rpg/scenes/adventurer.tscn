@@ -458,8 +458,8 @@ shape = SubResource("RectangleShape2D_023up")
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1680810169]
 limit_left = 0
 limit_top = 0
-limit_right = 1600
-limit_bottom = 1344
+limit_right = 1408
+limit_bottom = 1152
 
 [node name="SwingSwordAudio" type="AudioStreamPlayer2D" parent="." unique_id=829817277]
 stream = ExtResource("2_023up")
@@ -479,3 +479,16 @@ metadata/_edit_group_ = true
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Interactionbox" unique_id=573164654]
 position = Vector2(-5, -1)
 shape = SubResource("RectangleShape2D_kuek1")
+
+[node name="InteractionIndicator" type="Label" parent="." unique_id=1690409145]
+visible = false
+offset_left = -14.5
+offset_top = -24.75
+offset_right = 15.5
+offset_bottom = -8.75
+theme_override_colors/font_color = Color(0.7294118, 0, 0, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 11
+text = "!"
+horizontal_alignment = 1

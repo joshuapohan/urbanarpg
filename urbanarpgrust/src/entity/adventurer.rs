@@ -2,6 +2,7 @@ use godot::classes::AnimatedSprite2D;
 use godot::classes::Area2D;
 use godot::classes::AudioStreamPlayer2D;
 use godot::classes::Input;
+use godot::classes::Label;
 use godot::classes::Timer;
 use godot::obj::Base;
 use godot::prelude::*;
@@ -30,12 +31,16 @@ pub struct Adventurer {
     is_invincible: bool,
     is_dead: bool,
     hitbox_offset: Vector2,
+    interaction_hitbox_offset: Vector2,
 
     animated_sprite: Option<Gd<AnimatedSprite2D>>,
     swing_sword_audio: Option<Gd<AudioStreamPlayer2D>>,
     take_damage_audio: Option<Gd<AudioStreamPlayer2D>>,
     hitbox_area: Option<Gd<Area2D>>,
+    interactionbox_area: Option<Gd<Area2D>>,
     damage_cooldown_timer: Option<Gd<Timer>>,
+    current_interactable: Option<Gd<Node2D>>,
+    interaction_indicator: Option<Gd<Label>>,
 
 
     base: Base<CharacterBody2D>    
@@ -48,7 +53,6 @@ impl Adventurer{
 
     #[signal]
     fn s_health_changes(new_health: i32);
-
 
     #[func]
     pub fn reset(&mut self){
@@ -66,6 +70,13 @@ impl Adventurer{
         if input.is_action_just_pressed("attack(physical)") && !self.is_attacking{
             self.attack();
         }
+
+        if input.is_action_just_pressed("interact") {
+            if self.current_interactable.is_some(){
+                godot_print!("Interaction triggered");
+                self.current_interactable.as_mut().unwrap().call("interact", &[]);
+            }
+        }        
 
         // skip movement if is attacking or dead
         if self.is_attacking || self.is_dead{
@@ -145,12 +156,16 @@ impl Adventurer{
 
         if self.last_direction == Vector2::LEFT {
             self.hitbox_area.as_mut().unwrap().set_position(Vector2 { x: -x, y: y });
+            self.interactionbox_area.as_mut().unwrap().set_position(Vector2 { x: -x, y: y });
         } else if self.last_direction == Vector2::RIGHT {
             self.hitbox_area.as_mut().unwrap().set_position(Vector2 { x: x, y: y });
+            self.interactionbox_area.as_mut().unwrap().set_position(Vector2 { x: x, y: y });
         } else if self.last_direction == Vector2::UP {
             self.hitbox_area.as_mut().unwrap().set_position(Vector2 { x: y, y: -x });            
+            self.interactionbox_area.as_mut().unwrap().set_position(Vector2 { x: y, y: -x });            
         } else if self.last_direction == Vector2::DOWN {
             self.hitbox_area.as_mut().unwrap().set_position(Vector2 { x: y, y: x });        
+            self.interactionbox_area.as_mut().unwrap().set_position(Vector2 { x: y, y: x });        
         }
     }
 
@@ -175,6 +190,27 @@ impl Adventurer{
             }            
         }
     }
+
+    #[func]
+    fn on_interactionbox_area_entered(&mut self, body: Gd<Node2D>){
+        godot_print!("Entered interaction area");
+        if body.get_parent().is_some() && body.get_parent().as_ref().unwrap().get_name() == "Interactables"{
+            godot_print!("Entered interactable area");
+            self.current_interactable = Some(body);
+            self.interaction_indicator.as_mut().unwrap().show();
+        }        
+    }
+
+    #[func]
+    fn on_interactionbox_area_exited(&mut self, body: Gd<Node2D>){
+        if self.current_interactable.is_some(){
+            if self.current_interactable.as_ref().unwrap().instance_id() == body.instance_id(){
+                godot_print!("Exited interactable area");
+                self.current_interactable.take();
+                self.interaction_indicator.as_mut().unwrap().hide();
+            }
+        }
+    }    
 
     pub fn heal(&mut self, heal_amount: i32){
         if self.health + heal_amount > self.max_health{
@@ -232,11 +268,15 @@ impl ICharacterBody2D for Adventurer{
             speed:50.0,
             strength: 10,
             hitbox_offset: Vector2::ZERO,
+            interaction_hitbox_offset: Vector2::ZERO,
             base: base,
             animated_sprite: None,
             swing_sword_audio: None,
             take_damage_audio: None,
             hitbox_area: None,
+            interactionbox_area: None,
+            current_interactable: None,
+            interaction_indicator: None,
             damage_cooldown_timer: None,
             last_direction: Vector2::RIGHT,
             is_attacking: false,
@@ -255,6 +295,8 @@ impl ICharacterBody2D for Adventurer{
         self.take_damage_audio = self.base().get_node_as::<AudioStreamPlayer2D>("TakeDamageAudio").into();
         self.damage_cooldown_timer =  self.base().get_node_as::<Timer>("DamageCooldownTimer").into();
         self.hitbox_area = self.base().get_node_as::<Area2D>("Hitbox").into();
+        self.interactionbox_area = self.base().get_node_as::<Area2D>("Interactionbox").into();
+        self.interaction_indicator = self.base().get_node_as::<Label>("InteractionIndicator").into();
 
 
         godot_print!("Current singleton {}", self.health);
@@ -271,8 +313,20 @@ impl ICharacterBody2D for Adventurer{
             hitbox.connect("body_entered", &on_body_entered_callback);
         }
 
+        let on_interactionbox_area_entered_callback = Callable::from_object_method(&self.base(), "on_interactionbox_area_entered");
+        if let Some(interactionbox) = &mut self.interactionbox_area{
+            interactionbox.connect("body_entered", &on_interactionbox_area_entered_callback);
+        }
+
+        let on_interactionbox_area_exited_callback = Callable::from_object_method(&self.base(), "on_interactionbox_area_exited");
+        if let Some(interactionbox) = &mut self.interactionbox_area{
+            interactionbox.connect("body_exited", &on_interactionbox_area_exited_callback);
+        }
+
+
         // Initialize hitbox
         self.hitbox_offset = self.hitbox_area.as_ref().unwrap().get_position();
+        self.interaction_hitbox_offset = self.interactionbox_area.as_ref().unwrap().get_position();
 
         // timer callbacks
         let on_damage_cooldown_timer_callback = Callable::from_object_method(&self.base(), "on_damage_cooldown_timer_timeout");

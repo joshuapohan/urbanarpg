@@ -13,6 +13,7 @@
 [ext_resource type="PackedScene" uid="uid://tj761ybf50cx" path="res://scenes/slime.tscn" id="9_wagyc"]
 [ext_resource type="Texture2D" uid="uid://bb14eul0p3f3" path="res://assets/images/tileset/Outdoor_Decor_Free.png" id="10_0xhfr"]
 [ext_resource type="PackedScene" uid="uid://bmk6wssr75fbe" path="res://scenes/adventurer.tscn" id="10_bh7ej"]
+[ext_resource type="PackedScene" uid="uid://c7pc3nb5xdod2" path="res://scenes/characters/guide.tscn" id="14_3otjo"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_vj4su"]
 texture = ExtResource("1_craya")
@@ -1338,3 +1339,8 @@ position = Vector2(16, -80)
 shape = SubResource("RectangleShape2D_7q6iu")
 
 [node name="Items" type="Node2D" parent="." unique_id=803044415]
+
+[node name="Interactables" type="Node2D" parent="." unique_id=539155697]
+
+[node name="Guide" parent="Interactables" unique_id=2058608418 instance=ExtResource("14_3otjo")]
+position = Vector2(416, 656)

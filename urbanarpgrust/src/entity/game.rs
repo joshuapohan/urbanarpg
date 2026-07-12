@@ -81,6 +81,11 @@ impl MainNode{
         }
     }
 
+    #[func]
+    fn on_interaction_callback(&mut self, interaction_id: i32){
+        godot_print!("Interaction triggered with id : {}", interaction_id);
+    }
+
     // --------------------------------------------------------------
     //   LEVEL MANAGEMENT
     // --------------------------------------------------------------
@@ -130,6 +135,16 @@ impl MainNode{
             let health_changed_callable = Callable::from_object_method(&self.hud.as_ref().unwrap(), "update_health");
             self.player.as_mut().unwrap().connect("s_health_changes", &health_changed_callable);
 
+            let mut interactables = self.base().try_get_node_as::<Node2D>("CurrentLevel/Interactables");
+            if interactables.is_some(){
+                let interaction_callback = Callable::from_object_method(&self.base(), "on_interaction_callback");
+                for mut child in interactables.as_mut().unwrap().get_children().iter_shared(){
+                    if child.has_signal("s_npc_interacted"){
+                        child.connect("s_npc_interacted", &interaction_callback);
+                    }
+                }
+            }            
+            
         }
     }
 
