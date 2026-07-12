@@ -8,6 +8,7 @@ use godot::prelude::*;
 use godot::classes::{CharacterBody2D, ICharacterBody2D};
 
 use crate::entity::slime::Slime;
+use crate::script::gamestate;
 use crate::script::playerstats::PlayerStats;
 
 
@@ -53,6 +54,7 @@ impl Adventurer{
     pub fn reset(&mut self){
         godot_print!("Player reset");
         PlayerStats::singleton().bind_mut().reset();
+
         self.health = PlayerStats::singleton().bind_mut().max_health;
         let new_health = self.health;
         self.signals().s_health_changes().emit(new_health);   
@@ -280,6 +282,10 @@ impl ICharacterBody2D for Adventurer{
     }
 
     fn physics_process(&mut self, _delta: f64){
+        if gamestate::GameState::singleton().bind().is_gameplay_paused() {
+            return
+        }
+        
         self.hitbox_area.as_mut().unwrap().set_monitoring(false);
 
         self.process_movement();

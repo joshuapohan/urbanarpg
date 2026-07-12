@@ -1,9 +1,10 @@
 use godot::obj::Base;
 use godot::prelude::{GodotClass, godot_api};
-use godot::classes::{CollisionShape2D, INode2D, Node2D};
+use godot::classes::{CollisionShape2D, INode2D, InputEvent, Node2D};
 use godot::prelude::*;
 use crate::entity::adventurer::Adventurer;
 use crate::scene::hud::HUD;
+use crate::script::gamestate;
 use crate::template::levelroot::LevelRoot;
 use crate::template::portal::Portal;
 
@@ -136,6 +137,17 @@ impl INode2D for MainNode{
             current_level: None,
             player: None,
             hud: None,
+        }
+    }
+
+    fn input(&mut self, event: Gd<InputEvent>){
+        if event.is_action_pressed("pause"){
+            let is_paused = gamestate::GameState::singleton().bind().is_gameplay_paused();
+            if is_paused {
+                gamestate::GameState::singleton().bind_mut().resume_gameplay();
+            } else {
+                gamestate::GameState::singleton().bind_mut().pause_gameplay();
+            }
         }
     }
 

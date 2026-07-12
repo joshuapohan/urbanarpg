@@ -427,6 +427,9 @@ size = Vector2(10, 8)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_023up"]
 size = Vector2(15.5, 15)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kuek1"]
+size = Vector2(10, 18)
+
 [node name="Adventurer" type="Adventurer" unique_id=1073302741]
 speed = 200.0
 scale = Vector2(4, 4)
@@ -467,3 +470,11 @@ stream = ExtResource("3_h70i8")
 [node name="DamageCooldownTimer" type="Timer" parent="." unique_id=281182016]
 wait_time = 0.5
 one_shot = true
+
+[node name="Interactionbox" type="Area2D" parent="." unique_id=1093141339]
+position = Vector2(10, 0)
+metadata/_edit_group_ = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Interactionbox" unique_id=573164654]
+position = Vector2(-5, -1)
+shape = SubResource("RectangleShape2D_kuek1")

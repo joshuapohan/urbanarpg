@@ -4,6 +4,7 @@ use godot::classes::{AnimatedSprite2D, Area2D, AudioStreamPlayer2D, CharacterBod
 use rand::Rng;
 
 use crate::entity::adventurer::Adventurer;
+use crate::script::gamestate;
 use crate::template::levelroot::LevelRoot;
 use crate::ui::healthbar::HealthBar;
 
@@ -271,6 +272,9 @@ impl ICharacterBody2D for Slime{
     }
     
     fn physics_process(&mut self, delta: f64){
+        if gamestate::GameState::singleton().bind().is_gameplay_paused() {
+            return
+        }        
         if self.alive && self.target.is_some() && self.target.as_ref().unwrap().is_instance_valid(){
             self.attack(delta);
         } else {
