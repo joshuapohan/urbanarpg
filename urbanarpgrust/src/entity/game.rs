@@ -3,7 +3,9 @@ use godot::prelude::{GodotClass, godot_api};
 use godot::classes::{CollisionShape2D, INode2D, InputEvent, Node2D};
 use godot::prelude::*;
 use crate::entity::adventurer::Adventurer;
+use crate::entity::game;
 use crate::scene::hud::HUD;
+use crate::scene::mainmenu::MainMenu;
 use crate::script::gamestate;
 use crate::template::levelroot::LevelRoot;
 use crate::template::portal::Portal;
@@ -18,6 +20,7 @@ struct MainNode {
     current_level: Option<Gd<LevelRoot>>,
     player: Option<Gd<Adventurer>>,
     hud: Option<Gd<HUD>>,
+    main_menu: Option<Gd<MainMenu>>,
 }
 
 #[godot_api]
@@ -81,7 +84,7 @@ impl MainNode{
     // --------------------------------------------------------------
     //   LEVEL MANAGEMENT
     // --------------------------------------------------------------
-     #[func]
+    #[func]
     fn load_level(&mut self, level_id: i32){
         godot_print!("load_level");
         self.player = None;
@@ -91,16 +94,18 @@ impl MainNode{
             self.current_level.as_mut().unwrap().set_name("OldLevel");
             self.current_level.as_mut().unwrap().queue_free();
 
-            // change level
-            let level_name = format!("res://scenes/levels/level_{}.tscn", level_id);
-            godot_print!("Loaded {}", level_name);
-            let mut current_level = load::<PackedScene>(&level_name).instantiate_as::<LevelRoot>();
-            current_level.set_name("CurrentLevel");
-            self.base_mut().add_child(&current_level);
-
-            
-            self.setup_level(current_level);
         }
+
+        // change level
+        let level_name = format!("res://scenes/levels/level_{}.tscn", level_id);
+        godot_print!("Loaded {}", level_name);
+        let mut current_level = load::<PackedScene>(&level_name).instantiate_as::<LevelRoot>();
+        current_level.set_name("CurrentLevel");
+        self.base_mut().add_child(&current_level);
+        
+        self.setup_level(current_level);
+        // set game context
+        gamestate::GameState::singleton().bind_mut().set_game_context_level(level_id);        
     }
 
     fn setup_level(&mut self, node: Gd<LevelRoot>){
@@ -127,6 +132,18 @@ impl MainNode{
 
         }
     }
+
+    #[func]
+    fn on_main_menu_start_button_pressed(&mut self){
+        godot_print!("start pressed");
+        self.main_menu.as_mut().unwrap().hide();
+        godot_print!("level loaded");
+        gamestate::GameState::singleton().bind_mut().set_game_context_level(1);
+        self.load_level(1);
+        gamestate::GameState::singleton().bind_mut().resume_gameplay();
+        godot_print!("resumed: {}", !gamestate::GameState::singleton().bind().is_gameplay_paused());
+    }
+    
 }
 
 #[godot_api]
@@ -137,6 +154,7 @@ impl INode2D for MainNode{
             current_level: None,
             player: None,
             hud: None,
+            main_menu: None,
         }
     }
 
@@ -153,6 +171,11 @@ impl INode2D for MainNode{
 
     fn ready(&mut self) {
         self.hud = self.base().get_node_as::<HUD>("HUD").into(); 
+        self.main_menu = self.base().get_node_as::<MainMenu>("MainMenu").into(); 
+
+
+        let on_start_button_pressed_callback = Callable::from_object_method(&self.base(), "on_main_menu_start_button_pressed");
+        self.main_menu.as_mut().unwrap().connect("s_start_button_pressed", &on_start_button_pressed_callback);
 
         let fade_in_callable = Callable::from_object_method(&self.base(), "on_hud_fade_in_complete");
         self.hud.as_mut().unwrap().connect("s_fade_in_complete", &fade_in_callable);
@@ -161,8 +184,10 @@ impl INode2D for MainNode{
         let fade_out_callable = Callable::from_object_method(&self.base(), "on_hud_fade_out_complete");
         self.hud.as_mut().unwrap().connect("s_fade_out_complete", &fade_out_callable);
 
-        let current_level_node =  self.base().get_node_as::<LevelRoot>("CurrentLevel").into();
-        self.setup_level(current_level_node);
+        // game state paused on initial
+        gamestate::GameState::singleton().bind_mut().pause_gameplay();
+        //let current_level_node =  self.base().get_node_as::<LevelRoot>("CurrentLevel").into();
+        //self.setup_level(current_level_node);
 
     }
 }

@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://dwsuqjr25dq0k"]
+
+[node name="Mainmenu" type="MainMenu" unique_id=985586024]
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=854645810]
+offset_right = 1248.0
+offset_bottom = 720.0
+color = Color(0, 0, 0, 1)
+
+[node name="TouchScreenButton" type="TouchScreenButton" parent="." unique_id=476643430]
+
+[node name="MenuContainer" type="VBoxContainer" parent="." unique_id=1727668054]
+offset_left = 472.0
+offset_top = 208.0
+offset_right = 808.0
+offset_bottom = 488.0
+
+[node name="RichTextLabel" type="RichTextLabel" parent="MenuContainer" unique_id=1033718714]
+layout_mode = 2
+text = "Rust Urban RPG"
+fit_content = true
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ColorRect" type="ColorRect" parent="MenuContainer" unique_id=952778551]
+layout_mode = 2
+size_flags_vertical = 3
+color = Color(0, 0, 0, 1)
+
+[node name="StartButton" type="Button" parent="MenuContainer" unique_id=982277217]
+layout_mode = 2
+text = "Start"
+
+[node name="QuitButton" type="Button" parent="MenuContainer" unique_id=1640568789]
+layout_mode = 2
+text = "Quit"
