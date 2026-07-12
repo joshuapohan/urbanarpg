@@ -1,10 +1,17 @@
-[gd_scene format=3 uid="uid://mnbg022f7p8x"]
+[gd_scene format=4 uid="uid://mnbg022f7p8x"]
 
 [ext_resource type="PackedScene" uid="uid://bguittsbj5vax" path="res://scenes/levels/level_root.tscn" id="1_6iamk"]
 [ext_resource type="PackedScene" uid="uid://dr2ejixib4uen" path="res://scenes/item/healthpickup.tscn" id="2_6iamk"]
+[ext_resource type="PackedScene" uid="uid://tj761ybf50cx" path="res://scenes/slime.tscn" id="2_x42e6"]
 [ext_resource type="PackedScene" uid="uid://bw6la4k3w2ekm" path="res://scenes/item/bulletpickup.tscn" id="3_nsrm0"]
 
 [node name="LevelRoot" unique_id=494037133 instance=ExtResource("1_6iamk")]
+
+[node name="TileMapLayer_Decoration" parent="." index="1" unique_id=1724744129]
+tile_map_data = PackedByteArray("AAABAAQAAAAAAAMAAAD//xAAAgAAAAsAAAAAABAAAgAAAAsAAAABABAAAgAAAAsAAAACABAAAgAAAAsAAAADABAAAgAAAAsAAAAEABAAAgAAAAsAAAAFABAAAgAAAAsAAAAGABAAAgAAAAsAAAAHABAAAgAAAAsAAAAIABAAAgAAAAsAAAAJABAAAgAAAAsAAAAKABAAAgAAAAsAAAALABAAAgAAAAsAAAAMABAAAgAAAAsAAAANABAAAgAAAAsAAAAOABAAAgAAAAsAAAAPABAAAgAAAAsAAAAQABAAAgAAAAsAAAARABAAAgAAAAsAAAASABAAAgAAAAsAAAATABAAAgAAAAsAAAAUABAAAgAAAAsAAAAVABAAAgAAAAsAAAAHAA8AAgAVABAAAAAIAA8AAgAWABAAAAABAA8AAgASABEAAAACAA8AAgATABEAAAABAA4AAgAPABAAAAACAA4AAgAQABAAAAACAAgAAgALAAwAAAAGAAgAAgALAAwAAAAEAAkAAgAPAAoAAAADAAkAAgAMAAkAAAAFAAkAAgAMAAkAAAACAAoAAgAIAAsAAAALAAsAAgAHAAcAAAALAAoAAgAHAAYAAAAJAAkAAgAPAAwAAAAIAAgAAgAEAAwAAAAJAAgAAgAFAAwAAAAKAAgAAgAGAAwAAAAKAAkAAgAMABEAAAAIAAkAAgAMABEAAAAHAAkAAgAAAAkAAAAOAAcAAgAEAA8AAAAAAAsAAgADAA8AAAAKAAoAAgAGAAoAAAAIAAoAAgAEAAsAAAALAA4AAgAIAAoAAAA=")
+
+[node name="Slime2" parent="Enemies" parent_id_path=PackedInt32Array(7531285) index="1" unique_id=1138708019 instance=ExtResource("2_x42e6")]
+position = Vector2(880, 696)
 
 [node name="Portal" parent="." index="4" unique_id=1967703328]
 target_map_id = 2

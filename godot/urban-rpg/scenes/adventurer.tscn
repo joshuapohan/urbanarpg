@@ -432,6 +432,7 @@ size = Vector2(10, 18)
 
 [node name="Adventurer" type="Adventurer" unique_id=1073302741]
 speed = 200.0
+strength = 50
 scale = Vector2(4, 4)
 metadata/_edit_group_ = true
 
