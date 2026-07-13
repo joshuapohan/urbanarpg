@@ -31,7 +31,7 @@ impl GameState {
         self.current_context = EGameStateContext::LEVEL(id)
     }
 
-        #[func]
+    #[func]
     pub fn set_game_context_mainmenu(&mut self, id: i32){
         self.current_context = EGameStateContext::MAINMENU
     }
