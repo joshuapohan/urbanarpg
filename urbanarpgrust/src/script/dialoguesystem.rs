@@ -47,7 +47,7 @@ impl DialogueSystem {
         if self.current_line_index > &node.lines.len() {
             match &node.choices {
                 Some(choices) => {
-                    let choices_list = Vec::new<GString>();
+                    let choices_list = Vec::<GString>::new();
                     for choice in choices {
                         choices_list.push(choice.text.clone());
                     }
