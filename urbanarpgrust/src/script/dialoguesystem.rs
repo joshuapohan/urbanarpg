@@ -49,7 +49,7 @@ impl DialogueSystem {
                 Some(choices) => {
                     let choices_list = Vec::new<GString>();
                     for choice in choices {
-                        choices_list.push(choice);
+                        choices_list.push(choice.text.clone());
                     }
                     self.signals().s_choices_shown(choices_list).emit();
                 }
