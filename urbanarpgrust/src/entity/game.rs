@@ -7,6 +7,7 @@ use crate::entity::game;
 use crate::scene::hud::HUD;
 use crate::scene::mainmenu::MainMenu;
 use crate::script::gamestate;
+use crate::script::dialoguesystem::{self, DialogueSystem};
 use crate::template::levelroot::LevelRoot;
 use crate::template::portal::Portal;
 
@@ -82,8 +83,14 @@ impl MainNode{
     }
 
     #[func]
-    fn on_interaction_callback(&mut self, interaction_type: GString, interaction_id: i32){
+    fn on_interaction_callback(&mut self, interaction_type: GString, interaction_id: GString){
         godot_print!("Interaction triggered with type : {}, id : {}", interaction_type, interaction_id);
+        match interaction_type.to_string().as_str() {
+            "npc_0" => {
+                DialogueSystem::singleton().bind_mut().start_dialogue_by_id(interaction_id);
+            },
+            _ => {}
+        }
     }
 
     // --------------------------------------------------------------

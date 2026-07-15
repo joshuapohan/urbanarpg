@@ -1,4 +1,4 @@
-use crate::script::dialoguenode::DialogueNode;
+use crate::script::dialoguenode::{DialogueLine, DialogueNode};
 use godot::prelude::*;
 use std::collections::HashMap;
 
@@ -26,7 +26,7 @@ impl DialogueSystem {
     fn s_dialogue_event(event_id: GString);
 
     #[func]
-    fn start_dialogue_by_id(&mut self, dialogue_id: GString) {
+    pub fn start_dialogue_by_id(&mut self, dialogue_id: GString) {
         let dialogue_node = self.dialogues.get(&dialogue_id);
         if dialogue_node.is_some() {
             self.current_dialogue_node = Some(dialogue_node.unwrap().clone());
@@ -37,7 +37,7 @@ impl DialogueSystem {
     }
 
     #[func]
-    fn next_line(&mut self) {
+    pub fn next_line(&mut self) {
         if self.current_dialogue_node.is_none() {
             godot_print!("Showing current line on nonexistent dialogue node");
             return;
@@ -80,6 +80,8 @@ impl DialogueSystem {
                 ("".into(), "".into(), "".into())
             }
         };
+        
+        godot_print!("Dialogue : {} {} : {}", avatar, speaker, text);
 
         self.signals().s_dialogue_started().emit(
             &text,
@@ -89,7 +91,7 @@ impl DialogueSystem {
     }
 
     #[func]
-    fn on_choice_selected(&mut self, index: i32) {
+    pub fn on_choice_selected(&mut self, index: i32) {
         if self.current_dialogue_node.is_none() {
             godot_print!("Choice selection on nonexistent dialogue node");
             return;
@@ -148,9 +150,23 @@ impl DialogueSystem {
 #[godot_api]
 impl IObject for DialogueSystem {
     fn init(base: Base<Object>) -> Self {
+        let testnode = DialogueNode{ 
+            id: "123".into(), 
+            lines: vec![
+                DialogueLine{ 
+                    text: "Hello".into(), 
+                    speaker_name: "Speaker".into(), 
+                    avatar_id: "hero".into() 
+                }
+            ], 
+            choices: None, 
+            on_exit_event: None 
+        };
+        let mut dialogues = HashMap::<GString, DialogueNode>::new();
+        dialogues.insert("123".into(), testnode);
         Self {
             base,
-            dialogues: HashMap::<GString, DialogueNode>::new(),
+            dialogues: dialogues,
             current_dialogue_node: None,
             current_line_index: 0,
         }
