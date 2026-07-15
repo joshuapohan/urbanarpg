@@ -82,8 +82,8 @@ impl MainNode{
     }
 
     #[func]
-    fn on_interaction_callback(&mut self, interaction_id: i32){
-        godot_print!("Interaction triggered with id : {}", interaction_id);
+    fn on_interaction_callback(&mut self, interaction_type: GString, interaction_id: i32){
+        godot_print!("Interaction triggered with type : {}, id : {}", interaction_type, interaction_id);
     }
 
     // --------------------------------------------------------------

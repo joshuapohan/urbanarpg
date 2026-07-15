@@ -10,6 +10,8 @@ pub struct NPC {
     
     #[export]
     interaction_id : i32,
+    #[export]
+    interaction_type: GString,    
 }
 
 #[godot_api]
@@ -18,6 +20,7 @@ impl ICharacterBody2D for NPC {
         Self{
             base: base,
             interaction_id: 0,
+            interaction_type: "npc_0".into(),
         }
     }
 
@@ -27,7 +30,7 @@ impl ICharacterBody2D for NPC {
 #[godot_api]
 impl NPC {
     #[signal]
-    fn s_npc_interacted(interaction_id: i32);
+    fn s_npc_interacted(interaction_type: GString, interaction_id: i32);
 
     #[func]
     fn interact(&mut self) {
@@ -40,6 +43,7 @@ impl Interactable for NPC {
     fn interact(&mut self) {
         godot_print!("Interaction triggered 2");
         let interaction_id = self.interaction_id;
-        self.signals().s_npc_interacted().emit(interaction_id);
+        let interaction_type = self.interaction_type.clone();
+        self.signals().s_npc_interacted().emit( &interaction_type, interaction_id);
     }
 }

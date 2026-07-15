@@ -1,12 +1,12 @@
-use crate::script::DialogueNode;
+use crate::script::dialoguenode::DialogueNode;
 use godot::prelude::*;
-use std::collections::Hashmap;
+use std::collections::HashMap;
 
 #[derive(GodotClass)]
 #[class(singleton)]
 pub struct DialogueSystem {
     base: Base<Object>,
-    dialogues: Hashmap<GString, DialogueNode>,
+    dialogues: HashMap<GString, DialogueNode>,
     current_dialogue_node: Option<DialogueNode>,
     current_line_index: i32,
 }
@@ -26,10 +26,10 @@ impl DialogueSystem {
     fn s_dialogue_event(event_id: GString);
 
     #[func]
-    fn start_dialogue_by_id(dialogue_id: GString) {
-        let dialogue_node = self.dialogues.get(dialogue_id);
+    fn start_dialogue_by_id(&mut self, dialogue_id: GString) {
+        let dialogue_node = self.dialogues.get(&dialogue_id);
         if dialogue_node.is_some() {
-            self.current_dialogue_node = Some(dialogue_node);
+            self.current_dialogue_node = Some(dialogue_node.unwrap().clone());
             self.show_current_line();
         } else {
             godot_print!("Dialogue id not found {}", dialogue_id);
@@ -39,19 +39,19 @@ impl DialogueSystem {
     #[func]
     fn next_line(&mut self) {
         if self.current_dialogue_node.is_none() {
-            godot_print("Showing current line on nonexistent dialogue node");
+            godot_print!("Showing current line on nonexistent dialogue node");
             return;
         }
         self.current_line_index = self.current_line_index + 1;
         let node = self.current_dialogue_node.as_ref().unwrap();
-        if self.current_line_index > &node.lines.len() {
+        if self.current_line_index > node.lines.len() as i32 {
             match &node.choices {
                 Some(choices) => {
-                    let choices_list = Vec::<GString>::new();
+                    let mut choices_list = Vec::<GString>::new();
                     for choice in choices {
                         choices_list.push(choice.text.clone());
                     }
-                    self.signals().s_choices_shown(choices_list).emit();
+                    self.signals().s_choices_shown().emit(choices_list);
                 }
                 None => self.end_dialogue(),
             }
@@ -63,26 +63,35 @@ impl DialogueSystem {
     #[func]
     fn show_current_line(&mut self) {
         if self.current_dialogue_node.is_none() {
-            godot_print("Showing current line on nonexistent dialogue node");
+            godot_print!("Showing current line on nonexistent dialogue node");
             return;
         }
-        let node = self.current_dialogue_node.as_ref().unwrap();
-        if self.current_line_index > &node.lines.len() {
-            godot_print("line index exceeds dialogue lines");
+        
+        if self.current_line_index > self.current_dialogue_node.as_ref().unwrap().lines.len() as i32{
+            godot_print!("line index exceeds dialogue lines");
             return;
         }
-        let line = &node.lines[self.current_line_index];
-        self.signals().s_dialogue_started.emit(
-            line.text.clone(),
-            line.speaker_name.clone(),
-            line.avatar_id.clone(),
+
+        let (text, speaker, avatar) = {
+            let line = self.current_dialogue_node.as_ref().unwrap().lines.get(self.current_line_index as usize);
+            if line.is_some() {
+                (line.unwrap().text.clone(), line.unwrap().speaker_name.clone(), line.unwrap().avatar_id.clone())
+            } else {
+                ("".into(), "".into(), "".into())
+            }
+        };
+
+        self.signals().s_dialogue_started().emit(
+            &text,
+            &speaker,
+            &avatar,
         );
     }
 
     #[func]
     fn on_choice_selected(&mut self, index: i32) {
         if self.current_dialogue_node.is_none() {
-            godot_print("Choice selection on nonexistent dialogue node");
+            godot_print!("Choice selection on nonexistent dialogue node");
             return;
         }
         if self
@@ -92,20 +101,18 @@ impl DialogueSystem {
             .choices
             .is_none()
         {
-            godot_print("Choice selection on node with no choices");
+            godot_print!("Choice selection on node with no choices");
             return;
         }
-        if self
+        if (self
             .current_dialogue_node
             .as_ref()
             .unwrap()
             .choices
             .as_ref()
             .unwrap()
-            .len()
-            < index
-        {
-            godot_print("Choice selection on out of range choices index {}", index);
+            .len() as i32)  < index {
+            godot_print!("Choice selection on out of range choices index {}", index);
             return;
         }
         let next_id = self
@@ -114,8 +121,9 @@ impl DialogueSystem {
             .unwrap()
             .choices
             .as_ref()
-            .unwrap()[index]
-            .next_id;
+            .unwrap().get(index as usize)
+            .as_ref().unwrap()
+            .next_id.clone();
 
         self.start_dialogue_by_id(next_id);
     }
@@ -127,10 +135,11 @@ impl DialogueSystem {
             return;
         }
         let current_node = self.current_dialogue_node.take();
-        if current_node.on_exit_event.is_some() {
+        if current_node.is_some() {
+            let event_id = current_node.as_ref().unwrap().on_exit_event.as_ref().unwrap().clone();
             self.signals()
                 .s_dialogue_event()
-                .emit(current_node.on_exit_event.unwrap().clone());
+                .emit(&event_id);
         }
         self.signals().s_dialogue_ended().emit();
     }
@@ -138,11 +147,10 @@ impl DialogueSystem {
 
 #[godot_api]
 impl IObject for DialogueSystem {
-    #[func]
     fn init(base: Base<Object>) -> Self {
         Self {
             base,
-            dialogues: Hashmap::new::<GString, DialogueNode>(),
+            dialogues: HashMap::<GString, DialogueNode>::new(),
             current_dialogue_node: None,
             current_line_index: 0,
         }
