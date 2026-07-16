@@ -79,6 +79,7 @@ impl Adventurer{
             self.attack();
         }
 
+        /* 
         
         if input.is_action_just_pressed("interact") {
             if self.current_interactable.is_some(){
@@ -86,7 +87,7 @@ impl Adventurer{
                 self.current_interactable.as_mut().unwrap().call("interact", &[]);
             }
         }
-          
+          */
 
 
         // skip movement if is attacking or dead

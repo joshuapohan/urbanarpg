@@ -145,6 +145,7 @@ impl MainNode{
             let health_changed_callable = Callable::from_object_method(&self.hud.as_ref().unwrap(), "update_health");
             self.player.as_mut().unwrap().connect("s_health_changes", &health_changed_callable);
 
+            /* 
             let mut interactables = self.base().try_get_node_as::<Node2D>("CurrentLevel/Interactables");
             if interactables.is_some(){
                 let interaction_callback = Callable::from_object_method(&self.base(), "on_interaction_callback");
@@ -153,7 +154,8 @@ impl MainNode{
                         child.connect("s_npc_interacted", &interaction_callback);
                     }
                 }
-            }            
+            }
+            */          
             
         }
     }
@@ -203,6 +205,8 @@ impl INode2D for MainNode{
                 godot_print!("In dialogue, moving to next line");
                 DialogueSystem::singleton().bind_mut().next_line();
                 self.base_mut().get_viewport().unwrap().set_input_as_handled();
+            } else {
+                self.player.as_mut().unwrap().bind_mut().try_interact();
             }
         }        
     }

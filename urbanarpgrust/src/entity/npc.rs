@@ -2,6 +2,8 @@ use godot::prelude::*;
 use godot::classes::{AnimatedSprite2D, Area2D, AudioStreamPlayer2D, CharacterBody2D, CollisionShape2D, ICharacterBody2D, Timer, Tween};
 
 use crate::entity::traits::Interactable;
+use crate::script::dialoguesystem::DialogueSystem;
+use crate::script::gamestate::GameState;
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]
@@ -44,6 +46,10 @@ impl Interactable for NPC {
         godot_print!("Interaction triggered 2");
         let interaction_id = self.interaction_id.clone();
         let interaction_type = self.interaction_type.clone();
-        self.signals().s_npc_interacted().emit( &interaction_type, &interaction_id);
+        //self.signals().s_npc_interacted().emit( &interaction_type, &interaction_id);
+
+        DialogueSystem::singleton().bind_mut().start_dialogue_by_id(interaction_id);
+        GameState::singleton().bind_mut().set_game_context_dialogue();
+        GameState::singleton().bind_mut().pause_gameplay();        
     }
 }
