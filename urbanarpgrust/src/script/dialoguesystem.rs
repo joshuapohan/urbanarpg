@@ -161,7 +161,7 @@ impl IObject for DialogueSystem {
             id: "123".into(), 
             lines: vec![
                 DialogueLine{ 
-                    text: "Hello".into(), 
+                    text: "HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello".into(), 
                     speaker_name: "Speaker".into(), 
                     avatar_id: "hero".into() 
                 }
