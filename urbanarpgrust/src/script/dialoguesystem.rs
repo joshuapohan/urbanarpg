@@ -30,6 +30,7 @@ impl DialogueSystem {
         let dialogue_node = self.dialogues.get(&dialogue_id);
         if dialogue_node.is_some() {
             self.current_dialogue_node = Some(dialogue_node.unwrap().clone());
+            self.current_line_index = 0;
             self.show_current_line();
         } else {
             godot_print!("Dialogue id not found {}", dialogue_id);
@@ -44,7 +45,8 @@ impl DialogueSystem {
         }
         self.current_line_index = self.current_line_index + 1;
         let node = self.current_dialogue_node.as_ref().unwrap();
-        if self.current_line_index > node.lines.len() as i32 {
+        godot_print!("current line index {} , dialogue len {}",self.current_line_index, node.lines.len() );
+        if self.current_line_index >= node.lines.len() as i32 {
             match &node.choices {
                 Some(choices) => {
                     let mut choices_list = Vec::<GString>::new();
@@ -138,11 +140,16 @@ impl DialogueSystem {
         }
         let current_node = self.current_dialogue_node.take();
         if current_node.is_some() {
-            let event_id = current_node.as_ref().unwrap().on_exit_event.as_ref().unwrap().clone();
-            self.signals()
-                .s_dialogue_event()
-                .emit(&event_id);
+            if current_node.as_ref().unwrap().on_exit_event.is_none(){
+
+            } else {
+                let event_id = current_node.as_ref().unwrap().on_exit_event.as_ref().unwrap().clone();
+                self.signals()
+                    .s_dialogue_event()
+                    .emit(&event_id);
+            }
         }
+        godot_print!("ending current dialogue");
         self.signals().s_dialogue_ended().emit();
     }
 }

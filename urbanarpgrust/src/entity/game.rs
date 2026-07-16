@@ -1,13 +1,13 @@
 use godot::obj::Base;
 use godot::prelude::{GodotClass, godot_api};
-use godot::classes::{CollisionShape2D, INode2D, InputEvent, Node2D};
+use godot::classes::{INode2D, InputEvent, Node2D};
 use godot::prelude::*;
 use crate::entity::adventurer::Adventurer;
-use crate::entity::game;
+use crate::scene::dialoguebox::DialogueBox;
 use crate::scene::hud::HUD;
 use crate::scene::mainmenu::MainMenu;
-use crate::script::gamestate;
-use crate::script::dialoguesystem::{self, DialogueSystem};
+use crate::script::gamestate::{self, GameState};
+use crate::script::dialoguesystem::DialogueSystem;
 use crate::template::levelroot::LevelRoot;
 use crate::template::portal::Portal;
 
@@ -22,6 +22,7 @@ struct MainNode {
     player: Option<Gd<Adventurer>>,
     hud: Option<Gd<HUD>>,
     main_menu: Option<Gd<MainMenu>>,
+    dialogue_box: Option<Gd<DialogueBox>>,
 }
 
 #[godot_api]
@@ -88,6 +89,8 @@ impl MainNode{
         match interaction_type.to_string().as_str() {
             "npc_0" => {
                 DialogueSystem::singleton().bind_mut().start_dialogue_by_id(interaction_id);
+                GameState::singleton().bind_mut().set_game_context_dialogue();
+                GameState::singleton().bind_mut().pause_gameplay();
             },
             _ => {}
         }
@@ -165,6 +168,11 @@ impl MainNode{
         gamestate::GameState::singleton().bind_mut().resume_gameplay();
         godot_print!("resumed: {}", !gamestate::GameState::singleton().bind().is_gameplay_paused());
     }
+
+    #[func]
+    fn try_interact_deferred(&mut self) {
+        self.player.as_mut().unwrap().bind_mut().try_interact();
+    }        
     
 }
 
@@ -177,6 +185,7 @@ impl INode2D for MainNode{
             player: None,
             hud: None,
             main_menu: None,
+            dialogue_box: None,
         }
     }
 
@@ -188,12 +197,22 @@ impl INode2D for MainNode{
             } else {
                 gamestate::GameState::singleton().bind_mut().pause_gameplay();
             }
-        }
+        } else if event.is_action_pressed("interact"){
+            if gamestate::GameState::singleton().bind().is_in_dialogue() {
+                // continue to next line
+                godot_print!("In dialogue, moving to next line");
+                DialogueSystem::singleton().bind_mut().next_line();
+                self.base_mut().get_viewport().unwrap().set_input_as_handled();
+            }
+        }        
     }
+
+
 
     fn ready(&mut self) {
         self.hud = self.base().get_node_as::<HUD>("HUD").into(); 
         self.main_menu = self.base().get_node_as::<MainMenu>("MainMenu").into(); 
+        self.dialogue_box = self.base().get_node_as::<DialogueBox>("DialogueBox").into(); 
 
 
         let on_start_button_pressed_callback = Callable::from_object_method(&self.base(), "on_main_menu_start_button_pressed");
@@ -206,10 +225,13 @@ impl INode2D for MainNode{
         let fade_out_callable = Callable::from_object_method(&self.base(), "on_hud_fade_out_complete");
         self.hud.as_mut().unwrap().connect("s_fade_out_complete", &fade_out_callable);
 
+        let dialogue_started_callable =  Callable::from_object_method(&self.dialogue_box.as_ref().unwrap(), "on_dialogue_start");
+        let dialogue_ended_callable =  Callable::from_object_method(&self.dialogue_box.as_ref().unwrap(), "on_dialogue_end");
+        DialogueSystem::singleton().connect("s_dialogue_started", &dialogue_started_callable);
+        DialogueSystem::singleton().connect("s_dialogue_ended", &dialogue_ended_callable);
+
         // game state paused on initial
         gamestate::GameState::singleton().bind_mut().pause_gameplay();
-        //let current_level_node =  self.base().get_node_as::<LevelRoot>("CurrentLevel").into();
-        //self.setup_level(current_level_node);
 
     }
 }
