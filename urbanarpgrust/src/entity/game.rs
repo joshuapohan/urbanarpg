@@ -202,8 +202,9 @@ impl INode2D for MainNode{
         } else if event.is_action_pressed("interact"){
             if gamestate::GameState::singleton().bind().is_in_dialogue() {
                 // continue to next line
-                godot_print!("In dialogue, moving to next line");
-                DialogueSystem::singleton().bind_mut().next_line();
+                godot_print!("In dialogue, advancing");
+                DialogueSystem::singleton().bind_mut().advance();                
+                //DialogueSystem::singleton().bind_mut().next_line();
                 self.base_mut().get_viewport().unwrap().set_input_as_handled();
             } else {
                 self.player.as_mut().unwrap().bind_mut().try_interact();
@@ -231,6 +232,9 @@ impl INode2D for MainNode{
 
         let dialogue_started_callable =  Callable::from_object_method(&self.dialogue_box.as_ref().unwrap(), "on_dialogue_start");
         let dialogue_ended_callable =  Callable::from_object_method(&self.dialogue_box.as_ref().unwrap(), "on_dialogue_end");
+        let skip_typewriter_callable =  Callable::from_object_method(&self.dialogue_box.as_ref().unwrap(), "on_skip_typewriter");
+
+        DialogueSystem::singleton().connect("s_skip_typewriter", &skip_typewriter_callable);
         DialogueSystem::singleton().connect("s_dialogue_started", &dialogue_started_callable);
         DialogueSystem::singleton().connect("s_dialogue_ended", &dialogue_ended_callable);
 

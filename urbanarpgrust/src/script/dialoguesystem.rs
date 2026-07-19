@@ -1,4 +1,4 @@
-use crate::script::dialoguenode::{DialogueLine, DialogueNode};
+use crate::script::{dialoguenode::{DialogueLine, DialogueNode}, gamestate};
 use godot::prelude::*;
 use std::collections::HashMap;
 
@@ -17,7 +17,10 @@ impl DialogueSystem {
     fn s_dialogue_started(line: GString, speaker: GString, avatar_id: GString);
 
     #[signal]
-    fn s_dialogue_ended();
+    fn s_skip_typewriter();
+
+    #[signal]
+    fn s_dialogue_ended();    
 
     #[signal]
     fn s_choices_shown(choices: Vec<GString>);
@@ -34,6 +37,18 @@ impl DialogueSystem {
             self.show_current_line();
         } else {
             godot_print!("Dialogue id not found {}", dialogue_id);
+        }
+    }
+
+    #[func]
+    pub fn advance(&mut self){
+        let is_dialogue_end = gamestate::GameState::singleton().bind().is_dialogue_state_end();
+        if  !is_dialogue_end {
+            godot_print!("Skip typewriter");
+            self.signals().s_skip_typewriter().emit();            
+        } else {
+            godot_print!("Next line");
+            self.next_line();
         }
     }
 
@@ -162,7 +177,17 @@ impl IObject for DialogueSystem {
             lines: vec![
                 DialogueLine{ 
                     text: "HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello".into(), 
-                    speaker_name: "Speaker".into(), 
+                    speaker_name: "Villager".into(), 
+                    avatar_id: "hero".into() 
+                },
+                DialogueLine{ 
+                    text: "Second hello".into(), 
+                    speaker_name: "Villager".into(), 
+                    avatar_id: "hero".into() 
+                },
+                DialogueLine{ 
+                    text: "Third hello".into(), 
+                    speaker_name: "Hero".into(), 
                     avatar_id: "hero".into() 
                 }
             ], 

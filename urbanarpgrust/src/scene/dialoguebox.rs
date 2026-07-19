@@ -21,14 +21,13 @@ impl DialogueBox {
     #[func]
     fn on_dialogue_start(&mut self, line: GString, speaker: GString, avatar_id: GString){
         godot_print!("Dialoguebox started {} {}", speaker, line);
+        gamestate::GameState::singleton().bind_mut().set_dialogue_state_start();        
         self.base_mut().show();
         self.name_label.as_mut().unwrap().set_text(&speaker);
         self.text_label.as_mut().unwrap().set_text(&line);
         self.text_label.as_mut().unwrap().set_visible_characters(0);
         self.line_len = line.len() as i32;
         self.effect_timer.as_mut().unwrap().start();
-
-
     }
 
     #[func]
@@ -40,14 +39,23 @@ impl DialogueBox {
     }
     
     #[func]
+    fn on_skip_typewriter(&mut self){
+        self.text_label.as_mut().unwrap().set_visible_characters(-1);
+        godot_print!("Showing all characters");
+        self.effect_timer.as_mut().unwrap().stop();
+        gamestate::GameState::singleton().bind_mut().set_dialogue_state_end();        
+    }
+
+    #[func]
     fn on_effect_timer_timeout(&mut self){
         let current = self.text_label.as_ref().unwrap().get_visible_characters();
         self.text_label.as_mut().unwrap().set_visible_characters(current + 1);
         godot_print!("Showing more characters");
         if current + 1 >= self.line_len {
             self.effect_timer.as_mut().unwrap().stop();
+            gamestate::GameState::singleton().bind_mut().set_dialogue_state_end();
         }
-    }
+    }    
 
 }
 

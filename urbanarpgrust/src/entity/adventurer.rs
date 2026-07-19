@@ -92,6 +92,7 @@ impl Adventurer{
 
         // skip movement if is attacking or dead
         if self.is_attacking || self.is_dead{
+            self.base_mut().set_velocity(Vector2::ZERO);
             return;
         }        
 
