@@ -1,0 +1,12 @@
+{
+  "123": {
+	"id": "123",
+	"lines": [
+	  { "text": "Hey! Good to see you!", "speaker_name": "Friend", "avatar_id": "friend" },
+	  { "text": "Been a while hasn't it?" , "speaker_name": "Friend", "avatar_id": "friend"}
+	],
+	"choices": null,
+	"on_exit_event": "met_npc_001",
+	"require_flag": null
+  }
+}

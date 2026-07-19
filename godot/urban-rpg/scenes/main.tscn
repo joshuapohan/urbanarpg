@@ -2,9 +2,13 @@
 
 [ext_resource type="PackedScene" uid="uid://dpl8cymntwtho" path="res://scenes/ui/hud.tscn" id="2_0wfyh"]
 [ext_resource type="PackedScene" uid="uid://dwsuqjr25dq0k" path="res://scenes/ui/mainmenu.tscn" id="3_jyhfs"]
+[ext_resource type="PackedScene" uid="uid://8fr5wr0wxch4" path="res://scenes/ui/dialoguebox.tscn" id="3_sugp2"]
 
 [node name="MainNode" type="MainNode" unique_id=171757052]
 
 [node name="HUD" parent="." unique_id=1571211711 instance=ExtResource("2_0wfyh")]
 
 [node name="MainMenu" parent="." unique_id=985586024 instance=ExtResource("3_jyhfs")]
+
+[node name="DialogueBox" parent="." unique_id=2135514929 instance=ExtResource("3_sugp2")]
+visible = false

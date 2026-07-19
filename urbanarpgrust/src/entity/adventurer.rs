@@ -64,6 +64,14 @@ impl Adventurer{
         self.signals().s_health_changes().emit(new_health);   
     }
 
+    #[func]
+    pub fn try_interact(&mut self){
+        if self.current_interactable.is_some(){
+            godot_print!("Interaction triggered");
+            self.current_interactable.as_mut().unwrap().call("interact", &[]);
+        }        
+    }
+
     fn process_movement(&mut self){
         let input = Input::singleton();
 
@@ -71,15 +79,20 @@ impl Adventurer{
             self.attack();
         }
 
+        /* 
+        
         if input.is_action_just_pressed("interact") {
             if self.current_interactable.is_some(){
                 godot_print!("Interaction triggered");
                 self.current_interactable.as_mut().unwrap().call("interact", &[]);
             }
-        }        
+        }
+          */
+
 
         // skip movement if is attacking or dead
         if self.is_attacking || self.is_dead{
+            self.base_mut().set_velocity(Vector2::ZERO);
             return;
         }        
 
@@ -337,6 +350,10 @@ impl ICharacterBody2D for Adventurer{
 
     fn physics_process(&mut self, _delta: f64){
         if gamestate::GameState::singleton().bind().is_gameplay_paused() {
+            return
+        }
+
+        if gamestate::GameState::singleton().bind().is_in_dialogue() {
             return
         }
         
