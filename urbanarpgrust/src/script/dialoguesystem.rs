@@ -1,4 +1,4 @@
-use crate::script::{dialoguenode::{DialogueLine, DialogueNode}, gamestate};
+use crate::script::{dialoguenode::{DialogueLine, DialogueNode, load_dialogues}, gamestate};
 use godot::prelude::*;
 use std::collections::HashMap;
 
@@ -172,6 +172,7 @@ impl DialogueSystem {
 #[godot_api]
 impl IObject for DialogueSystem {
     fn init(base: Base<Object>) -> Self {
+        /* 
         let testnode = DialogueNode{ 
             id: "123".into(), 
             lines: vec![
@@ -196,6 +197,10 @@ impl IObject for DialogueSystem {
         };
         let mut dialogues = HashMap::<GString, DialogueNode>::new();
         dialogues.insert("123".into(), testnode);
+        */
+
+        let dialogues = load_dialogues();
+
         Self {
             base,
             dialogues: dialogues,
