@@ -27,7 +27,7 @@ impl DialogueSystem {
     fn s_dialogue_ended();    
 
     #[signal]
-    fn s_choice_highlighted(choices: Vec<GString>, index: i32);
+    fn s_choice_highlighted(index: i32);
 
     #[signal]
     fn s_choices_shown(choices: Vec<GString>);
@@ -65,37 +65,36 @@ impl DialogueSystem {
 
     #[func]
     pub fn move_choice_up(&mut self){
+        godot_print!("In dialogue, up 1");
         if self.is_in_dialogue_choice && self.current_choices.is_some(){
+            godot_print!("In dialogue, up 2");
+
             let choices = self.current_choices.as_ref().unwrap();
             if self.current_choice_index <= 0 {
                 self.current_choice_index = choices.len() as i32 - 1;
             } else {
                 self.current_choice_index = self.current_choice_index - 1;
             }
-            let mut choices_list = Vec::<GString>::new();
-            for choice in choices {
-                choices_list.push(choice.text.clone());
-            }
             let index = self.current_choice_index;            
-            self.signals().s_choice_highlighted().emit(choices_list, index);
+            self.signals().s_choice_highlighted().emit( index);
+            godot_print!("In dialogue, up 3 {}", self.current_choice_index);
         }
     }
 
     #[func]
     pub fn move_choice_down(&mut self){
+        godot_print!("In dialogue, down 1");
         if self.is_in_dialogue_choice && self.current_choices.is_some(){
+            godot_print!("In dialogue, down 2");
             let choices = self.current_choices.as_ref().unwrap();
-            if self.current_choice_index > choices.len() as i32 - 1 {
+            if self.current_choice_index >= choices.len() as i32 - 1 {
                 self.current_choice_index = 0
             } else {
                 self.current_choice_index = self.current_choice_index + 1;
             }
-            let mut choices_list = Vec::<GString>::new();
-            for choice in choices {
-                choices_list.push(choice.text.clone());
-            }
             let index = self.current_choice_index;            
-            self.signals().s_choice_highlighted().emit(choices_list, index);
+            self.signals().s_choice_highlighted().emit(index);
+            godot_print!("In dialogue, down 3 {}", self.current_choice_index);
         }
     }
     

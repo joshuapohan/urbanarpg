@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://dqmhrbch7svas"]
+
+[ext_resource type="StyleBox" uid="uid://bt1v0k7f4cdcu" path="res://styles/dialogue_choice_normal.tres" id="1_i30r7"]
+
+[node name="ChoiceBox" type="PanelContainer" unique_id=1686855897]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = ExtResource("1_i30r7")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=1545681587]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=1690403793]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1544674285]
+layout_mode = 2
+
+[node name="ChoiceText" type="Label" parent="MarginContainer/HBoxContainer" unique_id=267493550]
+layout_mode = 2
+text = "Test choice"

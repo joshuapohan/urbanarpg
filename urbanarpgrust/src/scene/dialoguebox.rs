@@ -1,5 +1,6 @@
 use godot::prelude::*;
-use godot::classes::{CanvasLayer, ICanvasLayer, RichTextLabel, Timer};
+use godot::classes::{CanvasLayer, ICanvasLayer, Label, PanelContainer, RichTextLabel, StyleBox, Timer, VBoxContainer};
+use serde_json::map::Iter;
 
 use crate::script::gamestate;
 
@@ -9,9 +10,16 @@ pub struct DialogueBox {
     #[base]
     base: Base<CanvasLayer>,
 
+    #[export]
+    normal_style: Option<Gd<StyleBox>>,
+    #[export]
+    highlighted_style: Option<Gd<StyleBox>>,
+
     name_label: Option<Gd<RichTextLabel>>,
     text_label: Option<Gd<RichTextLabel>>,
     effect_timer: Option<Gd<Timer>>,
+    choice_container: Option<Gd<VBoxContainer>>,
+    choice_scene: Option<Gd<PackedScene>>,
 
     line_len: i32,
 }
@@ -21,7 +29,11 @@ impl DialogueBox {
     #[func]
     fn on_dialogue_start(&mut self, line: GString, speaker: GString, avatar_id: GString){
         godot_print!("Dialoguebox started {} {}", speaker, line);
+
+        self.choice_container.as_mut().unwrap().hide();
+
         gamestate::GameState::singleton().bind_mut().set_dialogue_state_start();        
+
         self.base_mut().show();
         self.name_label.as_mut().unwrap().set_text(&speaker);
         self.text_label.as_mut().unwrap().set_text(&line);
@@ -59,12 +71,66 @@ impl DialogueBox {
     
     #[func]
     fn on_choice_shown(&mut self, choices: Vec<GString>){
+        self.name_label.as_mut().unwrap().set_text("");
+        self.text_label.as_mut().unwrap().set_text("");
+
+        godot_print!("Dialogue box choice show");
+
+        self.choice_container.as_mut().unwrap().show();
+
+        let container = self.choice_container.as_mut().unwrap();
+        for mut child in container.get_children().iter_shared(){
+            child.queue_free();
+        }
+
+
+        /* 
+        for (current_index, choice) in choices.iter().enumerate() {
+            let mut choice_box = self.choice_scene.as_ref().unwrap().instantiate_as::<PanelContainer>();
+            choice_box.get_node_as::<Label>("MarginContainer/HBoxContainer/ChoiceText").set_text(choice);
+            if current_index == 0 {
+                choice_box.add_theme_stylebox_override("panel", self.highlighted_style.as_ref().unwrap());
+            }
+            container.add_child(&choice_box);
+        }
+        */        
+        self.base_mut().call_deferred("deferred_show_choices", &[choices.to_variant()]);
 
     }
 
-   #[func]
-    fn s_choice_highlighted(&mut self, choices: Vec<GString>, index: i32){
-        
+    #[func]
+    fn deferred_show_choices(&mut self, choices: Vec<GString>){
+
+        let container = self.choice_container.as_mut().unwrap();
+
+        for (current_index, choice) in choices.iter().enumerate() {
+            let mut choice_box = self.choice_scene.as_ref().unwrap().instantiate_as::<PanelContainer>();
+            choice_box.get_node_as::<Label>("MarginContainer/HBoxContainer/ChoiceText").set_text(choice);
+            if current_index == 0 {
+                choice_box.add_theme_stylebox_override("panel", self.highlighted_style.as_ref().unwrap());
+            }
+            container.add_child(&choice_box);
+        }
+    }
+
+    #[func]
+    fn on_choice_highlighted(&mut self, index: i32){
+        self.name_label.as_mut().unwrap().set_text("");
+        self.text_label.as_mut().unwrap().set_text("");
+
+        godot_print!("Dialogue box choice highlight");        
+
+        self.choice_container.as_mut().unwrap().show();        
+
+        let container = self.choice_container.as_mut().unwrap();
+        for  (current_index, mut child) in container.get_children().iter_shared().enumerate() {
+            let mut panel_container = child.cast::<PanelContainer>();
+            if current_index as i32 == index {
+                panel_container.add_theme_stylebox_override("panel", self.highlighted_style.as_ref().unwrap());
+            } else {
+                panel_container.add_theme_stylebox_override("panel", self.normal_style.as_ref().unwrap());
+            }
+        }
     }    
 
 }
@@ -78,6 +144,10 @@ impl ICanvasLayer for DialogueBox{
             text_label: None,
             effect_timer: None,
             line_len: 0,
+            choice_container: None,
+            choice_scene: None,
+            normal_style: None, 
+            highlighted_style: None,
         }
     }
 
@@ -86,6 +156,8 @@ impl ICanvasLayer for DialogueBox{
         self.name_label = self.base().get_node_as::<RichTextLabel>("MarginContainer/VBoxContainer/Name").into(); 
         self.text_label = self.base().get_node_as::<RichTextLabel>("MarginContainer/VBoxContainer/Text").into(); 
         self.effect_timer = self.base().get_node_as::<Timer>("EffectTimer").into();
+        self.choice_container = self.base().get_node_as::<VBoxContainer>("MarginContainer/ScrollContainer/ChoiceContainer").into(); 
+        self.choice_scene = Some(load::<PackedScene>("res://scenes/ui/choicebox.tscn"));
 
         let on_effect_timer_timeout_callback = Callable::from_object_method(&self.base(), "on_effect_timer_timeout");
         self.effect_timer.as_mut().unwrap().connect("timeout", &on_effect_timer_timeout_callback);

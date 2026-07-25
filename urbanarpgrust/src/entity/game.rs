@@ -207,8 +207,10 @@ impl INode2D for MainNode{
                 //DialogueSystem::singleton().bind_mut().next_line();
                 self.base_mut().get_viewport().unwrap().set_input_as_handled();
             } else if event.is_action_pressed("move_up"){
+                godot_print!("In dialogue, up");
                 DialogueSystem::singleton().bind_mut().move_choice_up();
             } else if event.is_action_pressed("move_down"){
+                godot_print!("In dialogue, down");
                 DialogueSystem::singleton().bind_mut().move_choice_down();
             }
         } else {
