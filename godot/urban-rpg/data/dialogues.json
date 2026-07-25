@@ -1,11 +1,51 @@
 {
+  "1": {
+	"id": "1",
+	"lines": [
+	  { "text": "You're correct", "speaker_name": "Friend", "avatar_id": "friend" }
+	],
+	"choices": null,
+	"on_exit_event": "met_npc_001",
+	"require_flag": null
+  },
+  "2": {
+	"id": "2",
+	"lines": [
+	  { "text": "You're wrong", "speaker_name": "Friend", "avatar_id": "friend" }
+	],
+	"choices": null,
+	"on_exit_event": "met_npc_001",
+	"require_flag": null
+  },
+  "3": {
+	"id": "1",
+	"lines": [
+	  { "text": "You're kinda correct", "speaker_name": "Friend", "avatar_id": "friend" }
+	],
+	"choices": null,
+	"on_exit_event": "met_npc_001",
+	"require_flag": null
+  },	
   "123": {
 	"id": "123",
 	"lines": [
 	  { "text": "Hey! Good to see you!", "speaker_name": "Friend", "avatar_id": "friend" },
 	  { "text": "Been a while hasn't it?" , "speaker_name": "Friend", "avatar_id": "friend"}
 	],
-	"choices": null,
+	"choices": [
+		{
+			"text": "Good Morning",
+			"next_id": "1"
+		},
+		{
+			"text": "Good Night",
+			"next_id": "2"			
+		},
+		{
+			"text": "Good Afternoon",
+			"next_id": "3"			
+		}		
+	],
 	"on_exit_event": "met_npc_001",
 	"require_flag": null
   }

@@ -1,4 +1,4 @@
-use crate::script::{dialoguenode::{DialogueLine, DialogueNode, load_dialogues}, gamestate};
+use crate::script::{dialoguenode::{DialogueChoice, DialogueLine, DialogueNode, load_dialogues}, gamestate};
 use godot::prelude::*;
 use std::collections::HashMap;
 
@@ -9,6 +9,10 @@ pub struct DialogueSystem {
     dialogues: HashMap<GString, DialogueNode>,
     current_dialogue_node: Option<DialogueNode>,
     current_line_index: i32,
+
+    is_in_dialogue_choice: bool,
+    current_choices: Option<Vec<DialogueChoice>>,
+    current_choice_index: i32,
 }
 
 #[godot_api]
@@ -23,6 +27,9 @@ impl DialogueSystem {
     fn s_dialogue_ended();    
 
     #[signal]
+    fn s_choice_highlighted(index: i32);
+
+    #[signal]
     fn s_choices_shown(choices: Vec<GString>);
 
     #[signal]
@@ -30,6 +37,10 @@ impl DialogueSystem {
 
     #[func]
     pub fn start_dialogue_by_id(&mut self, dialogue_id: GString) {
+        self.is_in_dialogue_choice = false;
+        self.current_choice_index = 0;
+        self.current_choices = None;
+        
         let dialogue_node = self.dialogues.get(&dialogue_id);
         if dialogue_node.is_some() {
             self.current_dialogue_node = Some(dialogue_node.unwrap().clone());
@@ -53,11 +64,75 @@ impl DialogueSystem {
     }
 
     #[func]
+    pub fn move_choice_up(&mut self){
+        godot_print!("In dialogue, up 1");
+        if self.is_in_dialogue_choice && self.current_choices.is_some(){
+            godot_print!("In dialogue, up 2");
+
+            let choices = self.current_choices.as_ref().unwrap();
+            if self.current_choice_index <= 0 {
+                self.current_choice_index = choices.len() as i32 - 1;
+            } else {
+                self.current_choice_index = self.current_choice_index - 1;
+            }
+            let index = self.current_choice_index;            
+            self.signals().s_choice_highlighted().emit( index);
+            godot_print!("In dialogue, up 3 {}", self.current_choice_index);
+        }
+    }
+
+    #[func]
+    pub fn move_choice_down(&mut self){
+        godot_print!("In dialogue, down 1");
+        if self.is_in_dialogue_choice && self.current_choices.is_some(){
+            godot_print!("In dialogue, down 2");
+            let choices = self.current_choices.as_ref().unwrap();
+            if self.current_choice_index >= choices.len() as i32 - 1 {
+                self.current_choice_index = 0
+            } else {
+                self.current_choice_index = self.current_choice_index + 1;
+            }
+            let index = self.current_choice_index;            
+            self.signals().s_choice_highlighted().emit(index);
+            godot_print!("In dialogue, down 3 {}", self.current_choice_index);
+        }
+    }
+    
+    #[func]
+    pub fn select_current_choice(&mut self){
+        if self.is_in_dialogue_choice && self.current_choices.is_some(){
+            let choices = self.current_choices.as_ref().unwrap();
+            if self.current_choice_index >= choices.len() as i32 {
+                godot_error!("Invalid dialogue choice index {}", self.current_choice_index);
+                return
+            }
+            let index = self.current_choice_index as usize;
+            let choice_node = choices.get(index);
+            if choice_node.is_none() {
+                godot_error!("None choice node {}", self.current_choice_index);
+                return
+            } else {
+                let next_dialogue_id = choice_node.as_ref().unwrap().next_id.clone();
+                godot_print!("Starting next dialogue id: {}", next_dialogue_id);
+                self.start_dialogue_by_id(next_dialogue_id);
+            }
+        }
+    }       
+
+
+    #[func]
     pub fn next_line(&mut self) {
+
         if self.current_dialogue_node.is_none() {
             godot_print!("Showing current line on nonexistent dialogue node");
             return;
         }
+
+        if self.is_in_dialogue_choice {
+            self.select_current_choice();
+            return;
+        }
+
         self.current_line_index = self.current_line_index + 1;
         let node = self.current_dialogue_node.as_ref().unwrap();
         godot_print!("current line index {} , dialogue len {}",self.current_line_index, node.lines.len() );
@@ -68,6 +143,9 @@ impl DialogueSystem {
                     for choice in choices {
                         choices_list.push(choice.text.clone());
                     }
+                    self.is_in_dialogue_choice = true;
+                    self.current_choice_index = 0;
+                    self.current_choices = node.choices.clone();
                     self.signals().s_choices_shown().emit(choices_list);
                 }
                 None => self.end_dialogue(),
@@ -108,46 +186,6 @@ impl DialogueSystem {
     }
 
     #[func]
-    pub fn on_choice_selected(&mut self, index: i32) {
-        if self.current_dialogue_node.is_none() {
-            godot_print!("Choice selection on nonexistent dialogue node");
-            return;
-        }
-        if self
-            .current_dialogue_node
-            .as_ref()
-            .unwrap()
-            .choices
-            .is_none()
-        {
-            godot_print!("Choice selection on node with no choices");
-            return;
-        }
-        if (self
-            .current_dialogue_node
-            .as_ref()
-            .unwrap()
-            .choices
-            .as_ref()
-            .unwrap()
-            .len() as i32)  < index {
-            godot_print!("Choice selection on out of range choices index {}", index);
-            return;
-        }
-        let next_id = self
-            .current_dialogue_node
-            .as_ref()
-            .unwrap()
-            .choices
-            .as_ref()
-            .unwrap().get(index as usize)
-            .as_ref().unwrap()
-            .next_id.clone();
-
-        self.start_dialogue_by_id(next_id);
-    }
-
-    #[func]
     fn end_dialogue(&mut self) {
         if self.current_dialogue_node.is_none() {
             godot_print!("Ending nonexistent dialogue");
@@ -172,33 +210,6 @@ impl DialogueSystem {
 #[godot_api]
 impl IObject for DialogueSystem {
     fn init(base: Base<Object>) -> Self {
-        /* 
-        let testnode = DialogueNode{ 
-            id: "123".into(), 
-            lines: vec![
-                DialogueLine{ 
-                    text: "HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello".into(), 
-                    speaker_name: "Villager".into(), 
-                    avatar_id: "hero".into() 
-                },
-                DialogueLine{ 
-                    text: "Second hello".into(), 
-                    speaker_name: "Villager".into(), 
-                    avatar_id: "hero".into() 
-                },
-                DialogueLine{ 
-                    text: "Third hello".into(), 
-                    speaker_name: "Hero".into(), 
-                    avatar_id: "hero".into() 
-                }
-            ], 
-            choices: None, 
-            on_exit_event: None 
-        };
-        let mut dialogues = HashMap::<GString, DialogueNode>::new();
-        dialogues.insert("123".into(), testnode);
-        */
-
         let dialogues = load_dialogues();
 
         Self {
@@ -206,6 +217,9 @@ impl IObject for DialogueSystem {
             dialogues: dialogues,
             current_dialogue_node: None,
             current_line_index: 0,
+            is_in_dialogue_choice: false,
+            current_choices: None,
+            current_choice_index: 0
         }
     }
 }
