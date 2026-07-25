@@ -55,6 +55,16 @@ impl DialogueBox {
             self.effect_timer.as_mut().unwrap().stop();
             gamestate::GameState::singleton().bind_mut().set_dialogue_state_end();
         }
+    }
+    
+    #[func]
+    fn on_choice_shown(&mut self, choices: Vec<GString>){
+
+    }
+
+   #[func]
+    fn s_choice_highlighted(&mut self, choices: Vec<GString>, index: i32){
+        
     }    
 
 }

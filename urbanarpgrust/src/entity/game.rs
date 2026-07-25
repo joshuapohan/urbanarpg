@@ -199,17 +199,23 @@ impl INode2D for MainNode{
             } else {
                 gamestate::GameState::singleton().bind_mut().pause_gameplay();
             }
-        } else if event.is_action_pressed("interact"){
-            if gamestate::GameState::singleton().bind().is_in_dialogue() {
+        } else if gamestate::GameState::singleton().bind().is_in_dialogue() {
+            if event.is_action_pressed("interact") {
                 // continue to next line
                 godot_print!("In dialogue, advancing");
                 DialogueSystem::singleton().bind_mut().advance();                
                 //DialogueSystem::singleton().bind_mut().next_line();
                 self.base_mut().get_viewport().unwrap().set_input_as_handled();
-            } else {
+            } else if event.is_action_pressed("move_up"){
+                DialogueSystem::singleton().bind_mut().move_choice_up();
+            } else if event.is_action_pressed("move_down"){
+                DialogueSystem::singleton().bind_mut().move_choice_down();
+            }
+        } else {
+            if event.is_action_pressed("interact") {
                 self.player.as_mut().unwrap().bind_mut().try_interact();
             }
-        }        
+        }
     }
 
 
@@ -233,10 +239,14 @@ impl INode2D for MainNode{
         let dialogue_started_callable =  Callable::from_object_method(&self.dialogue_box.as_ref().unwrap(), "on_dialogue_start");
         let dialogue_ended_callable =  Callable::from_object_method(&self.dialogue_box.as_ref().unwrap(), "on_dialogue_end");
         let skip_typewriter_callable =  Callable::from_object_method(&self.dialogue_box.as_ref().unwrap(), "on_skip_typewriter");
+        let choice_shown_callable =  Callable::from_object_method(&self.dialogue_box.as_ref().unwrap(), "on_choice_shown");
+        let choice_highlighted_callable =  Callable::from_object_method(&self.dialogue_box.as_ref().unwrap(), "on_choice_highlighted");
 
         DialogueSystem::singleton().connect("s_skip_typewriter", &skip_typewriter_callable);
         DialogueSystem::singleton().connect("s_dialogue_started", &dialogue_started_callable);
         DialogueSystem::singleton().connect("s_dialogue_ended", &dialogue_ended_callable);
+        DialogueSystem::singleton().connect("s_choices_shown", &choice_shown_callable);
+        DialogueSystem::singleton().connect("s_choice_highlighted", &choice_highlighted_callable);
 
         // game state paused on initial
         gamestate::GameState::singleton().bind_mut().pause_gameplay();
