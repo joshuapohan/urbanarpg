@@ -5,6 +5,7 @@ use crate::entity::traits::Interactable;
 use crate::script::dialoguesystem::DialogueSystem;
 use crate::script::eventtracker;
 use crate::script::gamestate::GameState;
+use crate::log_info;
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]
@@ -35,7 +36,7 @@ impl ICharacterBody2D for NPC {
     }
 
     fn ready(&mut self){
-        godot_print!("interaction_id: {}", self.interaction_id);
+        log_info!("interaction_id: {}", self.interaction_id);
     }
   
 }
@@ -47,7 +48,7 @@ impl NPC {
 
     #[func]
     fn interact(&mut self) {
-        godot_print!("Interaction triggered 1");
+        log_info!("Interaction triggered 1");
         Interactable::interact(self); // delegate to trait impl
     }  
 }
@@ -55,23 +56,23 @@ impl NPC {
 
 impl Interactable for NPC {
     fn interact(&mut self) {
-        godot_print!("[interact] Interaction triggered 2");
+        log_info!("[interact] Interaction triggered 2");
         
         let interaction_id = if self.event_check_ids.len() > 0 && self.event_check_pass_interaction_id.len() > 0 {
             let mut id= self.event_check_pass_interaction_id.clone();
             'eventcheck: for event_check in self.event_check_ids.iter_shared() {
                 if eventtracker::EventTracker::singleton().bind().check_if_event(&event_check.to_string()) <= 0 {
                     id = self.interaction_id.clone();
-                    godot_print!("[interact] Interaction triggered , event not passed: {}", event_check);                    
+                    log_info!("[interact] Interaction triggered , event not passed: {}", event_check);                    
                     break 'eventcheck;
                 }                            
             }
             id
         } else {
-            godot_print!("[interact] Interaction triggered , no event check");                    
+            log_info!("[interact] Interaction triggered , no event check");                    
             self.interaction_id.clone()
         };
-        
+
         GameState::singleton().bind_mut().set_game_context_dialogue();
         GameState::singleton().bind_mut().pause_gameplay();        
         DialogueSystem::singleton().bind_mut().start_dialogue_by_id(interaction_id);

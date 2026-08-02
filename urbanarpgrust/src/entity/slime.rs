@@ -7,7 +7,8 @@ use crate::entity::adventurer::Adventurer;
 use crate::script::{eventtracker, gamestate};
 use crate::template::levelroot::LevelRoot;
 use crate::ui::healthbar::HealthBar;
-
+use crate::log_info;
+use crate::log_error;
 
 const DROPS: [&str;1] = ["health"];
 const DROP_RATE: f32 = 0.5;
@@ -59,20 +60,20 @@ impl Slime {
     
     #[func]
     fn on_sight_entered(&mut self, body: Gd<Node2D>){
-        godot_print!("player entered");
+        log_info!("player entered");
         
         if body.get_name() == "Adventurer"{
-            godot_print!("Adventurer entered");
+            log_info!("Adventurer entered");
             self.target = Some(body);
         }
     }
     
     #[func]
     fn on_sight_exited(&mut self, body: Gd<Node2D>){
-        godot_print!("player exited");
+        log_info!("player exited");
         
         if body.get_name() == "Adventurer"{
-            godot_print!("Adventurer exited");
+            log_info!("Adventurer exited");
             self.target = None;
         }
     }
@@ -126,7 +127,7 @@ impl Slime {
         for i in 0..self.drop_scenes.len(){
             cumulative_chance += self.drop_chances.at(i);
             if roll < cumulative_chance {
-                godot_print!("Slime dropping item {}", i);
+                log_info!("Slime dropping item {}", i);
                 let mut drop = self.drop_scenes.at(i).instantiate_as::<Area2D>();
                 drop.set_position(self.base().get_position());
                 self.base().get_parent().unwrap().get_parent().unwrap().cast::<LevelRoot>().call_deferred("add_child", &[drop.to_variant()]);
@@ -147,19 +148,19 @@ impl Slime {
             let mut collision_2d: Gd<CollisionShape2D> = node.try_cast().unwrap();
             collision_2d.set_deferred("disabled", &Variant::from(true));
         } else {
-            godot_error!("Unable to find collision node for slime")
+            log_error!("Unable to find collision node for slime")
         }
         if let Some(node) = self.base().get_node_or_null("Sight/CollisionShape2D"){
             let mut collision_2d: Gd<CollisionShape2D> = node.try_cast().unwrap();
             collision_2d.set_deferred("disabled", &Variant::from(true));
         } else {
-            godot_error!("Unable to find collision node for slime")
+            log_error!("Unable to find collision node for slime")
         }
         if let Some(node) = self.base().get_node_or_null("Hitbox/CollisionShape2D"){
             let mut collision_2d: Gd<CollisionShape2D> = node.try_cast().unwrap();
             collision_2d.set_deferred("disabled", &Variant::from(true));
         } else {
-            godot_error!("Unable to find collision node for slime")
+            log_error!("Unable to find collision node for slime")
         }
         self.drop_item();
 
@@ -172,7 +173,7 @@ impl Slime {
     fn on_body_entered(&mut self,  body: Gd<Node2D>){
         if  body.get_name().contains("Adventurer"){
             if let Ok(mut adventurer) = body.try_cast::<Adventurer>(){
-                godot_print!("Adventurer Hit");
+                log_info!("Adventurer Hit");
                 {
                     let mut bind_adventurer = adventurer.bind_mut();
                     bind_adventurer.take_damage(self.strength, self.base().get_position());

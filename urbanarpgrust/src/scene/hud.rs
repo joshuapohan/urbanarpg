@@ -1,7 +1,7 @@
 use godot::classes::tween::{EaseType, TransitionType};
 use godot::prelude::*;
 use godot::classes::{CanvasLayer, ColorRect, HBoxContainer, ICanvasLayer, Texture2D, Texture2DArrayRd, TextureRect};
-
+use crate::log_info;
 
 const HEART_SIZE: i32 = 20;
 
@@ -40,9 +40,9 @@ impl HUD {
 
     #[func]
     pub fn fade(&mut self, target: f64){
-        godot_print!("fade called target: {}", target);
+        log_info!("fade called target: {}", target);
         let current_alpha = self.fade_overlay.as_ref().unwrap().get_modulate().a;
-        godot_print!("current alpha: {}", current_alpha);        
+        log_info!("current alpha: {}", current_alpha);        
         
         let fade_overlay = self.fade_overlay.clone().unwrap().upcast::<Object>();
         let mut tween = self.base_mut().create_tween();

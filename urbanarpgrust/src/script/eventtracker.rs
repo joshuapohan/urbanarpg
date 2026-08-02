@@ -2,7 +2,8 @@ use std::collections::HashMap;
 
 use godot::prelude::*;
 use crate::script::eventdetail::{self, EventDetail};
-
+use crate::log_info;
+use crate::log_error;
 
 #[derive(GodotClass)]
 #[class(singleton)]
@@ -26,7 +27,7 @@ impl EventTracker{
                 }
             }, 
             None => {
-                godot_error!("[check_if_event] Event id not found: {}", event_id);
+                log_error!("[check_if_event] Event id not found: {}", event_id);
                 0
             }
         }
@@ -42,11 +43,11 @@ impl EventTracker{
                 } else {
                     event.is_triggered = true;
                     event.trigger_count = event.trigger_count + 1;
-                    godot_print!("Event triggered : {} : {}", event.id, event.trigger_count);
+                    log_info!("Event triggered : {} : {}", event.id, event.trigger_count);
                 }
             },
             None => {
-                godot_error!("[trigger_event] Event id not found: {}", event_id);                
+                log_error!("[trigger_event] Event id not found: {}", event_id);                
             }
         }
     }

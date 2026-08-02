@@ -11,7 +11,7 @@ use crate::script::gamestate::{self, GameState};
 use crate::script::dialoguesystem::DialogueSystem;
 use crate::template::levelroot::LevelRoot;
 use crate::template::portal::Portal;
-
+use crate::log_info;
 
 #[derive(GodotClass)]
 #[class(base=Node2D)]
@@ -30,7 +30,7 @@ struct MainNode {
 impl MainNode{
     #[func]
     fn on_hud_fade_out_complete(&mut self){
-        godot_print!("HUD Fade out Timeout");
+        log_info!("HUD Fade out Timeout");
         self.base_mut().call_deferred("load_level", &[1.to_variant()]);
         self.player.as_mut().unwrap().bind_mut().reset();
         self.hud.as_mut().unwrap().bind_mut().fade(0.0);          
@@ -38,27 +38,27 @@ impl MainNode{
 
     #[func]
     fn on_hud_fade_in_complete(&mut self){
-        godot_print!("HUD Fade in Timeout");
+        log_info!("HUD Fade in Timeout");
     }
 
 
     #[func]
     fn on_player_death_timeout(&mut self){
-        godot_print!("Player Death Signal Timeout");        
+        log_info!("Player Death Signal Timeout");        
         //self.player.as_mut().unwrap().bind_mut().reset();
         self.hud.as_mut().unwrap().bind_mut().fade(1.0);  
     }
 
     #[func]
     fn on_player_death_timeout_2(&mut self){
-        godot_print!("Player Death Signal Timeout");
+        log_info!("Player Death Signal Timeout");
         self.base_mut().call_deferred("load_level", &[1.to_variant()]);
         self.player.as_mut().unwrap().bind_mut().reset();  
     }    
       
     #[func]
     fn on_player_death(&mut self){
-        godot_print!("Player Death Signal Received");
+        log_info!("Player Death Signal Received");
         let mut tree = self.base().get_tree();
         let mut timer = tree.create_timer(1.0);
         let callable = Callable::from_object_method(&self.base(), "on_player_death_timeout");
@@ -73,11 +73,11 @@ impl MainNode{
     #[func]
     fn on_portal_entered(&mut self, body: Gd<Node2D>){
         if body.get_name().contains("Adventurer"){
-            godot_print!("Portal Entered");
+            log_info!("Portal Entered");
             // get target map id
             let portal: Option<Gd<Portal>> = self.current_level.as_ref().unwrap().get_node_as::<Portal>("Portal").into();        
             let target_level_id = portal.as_ref().unwrap().bind().get_portal_target_map_id();
-            godot_print!("Loading {}", target_level_id);
+            log_info!("Loading {}", target_level_id);
             self.base_mut().call_deferred("load_level", &[target_level_id.to_variant()]);
             
             //self.load_level();
@@ -89,7 +89,7 @@ impl MainNode{
     // --------------------------------------------------------------
     #[func]
     fn load_level(&mut self, level_id: i32){
-        godot_print!("load_level");
+        log_info!("load_level");
         self.player = None;
         if self.current_level.is_some(){
 
@@ -101,7 +101,7 @@ impl MainNode{
 
         // change level
         let level_name = format!("res://scenes/levels/level_{}.tscn", level_id);
-        godot_print!("Loaded {}", level_name);
+        log_info!("Loaded {}", level_name);
         let mut current_level = load::<PackedScene>(&level_name).instantiate_as::<LevelRoot>();
         current_level.set_name("CurrentLevel");
         self.base_mut().add_child(&current_level);
@@ -112,7 +112,7 @@ impl MainNode{
     }
 
     fn setup_level(&mut self, node: Gd<LevelRoot>){
-        godot_print!("setup_level");
+        log_info!("setup_level");
 
         self.current_level = Some(node);
         if self.current_level.is_some(){
@@ -138,13 +138,13 @@ impl MainNode{
 
     #[func]
     fn on_main_menu_start_button_pressed(&mut self){
-        godot_print!("start pressed");
+        log_info!("start pressed");
         self.main_menu.as_mut().unwrap().hide();
-        godot_print!("level loaded");
+        log_info!("level loaded");
         gamestate::GameState::singleton().bind_mut().set_game_context_level(1);
         self.load_level(1);
         gamestate::GameState::singleton().bind_mut().resume_gameplay();
-        godot_print!("resumed: {}", !gamestate::GameState::singleton().bind().is_gameplay_paused());
+        log_info!("resumed: {}", !gamestate::GameState::singleton().bind().is_gameplay_paused());
     }
 
     #[func]
@@ -178,15 +178,15 @@ impl INode2D for MainNode{
         } else if gamestate::GameState::singleton().bind().is_in_dialogue() {
             if event.is_action_pressed("interact") {
                 // continue to next line
-                godot_print!("In dialogue, advancing");
+                log_info!("In dialogue, advancing");
                 DialogueSystem::singleton().bind_mut().advance();                
                 //DialogueSystem::singleton().bind_mut().next_line();
                 self.base_mut().get_viewport().unwrap().set_input_as_handled();
             } else if event.is_action_pressed("move_up"){
-                godot_print!("In dialogue, up");
+                log_info!("In dialogue, up");
                 DialogueSystem::singleton().bind_mut().move_choice_up();
             } else if event.is_action_pressed("move_down"){
-                godot_print!("In dialogue, down");
+                log_info!("In dialogue, down");
                 DialogueSystem::singleton().bind_mut().move_choice_down();
             }
         } else {
