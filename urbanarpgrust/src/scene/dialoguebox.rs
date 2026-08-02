@@ -3,6 +3,7 @@ use godot::classes::{CanvasLayer, ICanvasLayer, Label, PanelContainer, RichTextL
 use serde_json::map::Iter;
 
 use crate::script::gamestate;
+use crate::log_info;
 
 #[derive(GodotClass)]
 #[class(base=CanvasLayer)]
@@ -28,7 +29,7 @@ pub struct DialogueBox {
 impl DialogueBox {
     #[func]
     fn on_dialogue_start(&mut self, line: GString, speaker: GString, avatar_id: GString){
-        godot_print!("Dialoguebox started {} {}", speaker, line);
+        log_info!("Dialoguebox started {} {}", speaker, line);
 
         self.choice_container.as_mut().unwrap().hide();
 
@@ -45,7 +46,7 @@ impl DialogueBox {
     #[func]
     fn on_dialogue_end(&mut self){
         self.base_mut().hide();
-        godot_print!("Dialoguebox ended");
+        log_info!("Dialoguebox ended");
         gamestate::GameState::singleton().bind_mut().set_game_context_level(0);
         gamestate::GameState::singleton().bind_mut().resume_gameplay();
     }
@@ -53,7 +54,7 @@ impl DialogueBox {
     #[func]
     fn on_skip_typewriter(&mut self){
         self.text_label.as_mut().unwrap().set_visible_characters(-1);
-        godot_print!("Showing all characters");
+        log_info!("Showing all characters");
         self.effect_timer.as_mut().unwrap().stop();
         gamestate::GameState::singleton().bind_mut().set_dialogue_state_end();        
     }
@@ -62,7 +63,7 @@ impl DialogueBox {
     fn on_effect_timer_timeout(&mut self){
         let current = self.text_label.as_ref().unwrap().get_visible_characters();
         self.text_label.as_mut().unwrap().set_visible_characters(current + 1);
-        godot_print!("Showing more characters");
+        log_info!("Showing more characters");
         if current + 1 >= self.line_len {
             self.effect_timer.as_mut().unwrap().stop();
             gamestate::GameState::singleton().bind_mut().set_dialogue_state_end();
@@ -74,7 +75,7 @@ impl DialogueBox {
         self.name_label.as_mut().unwrap().set_text("");
         self.text_label.as_mut().unwrap().set_text("");
 
-        godot_print!("Dialogue box choice show");
+        log_info!("Dialogue box choice show");
 
         self.choice_container.as_mut().unwrap().show();
 
@@ -118,7 +119,7 @@ impl DialogueBox {
         self.name_label.as_mut().unwrap().set_text("");
         self.text_label.as_mut().unwrap().set_text("");
 
-        godot_print!("Dialogue box choice highlight");        
+        log_info!("Dialogue box choice highlight");        
 
         self.choice_container.as_mut().unwrap().show();        
 

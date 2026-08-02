@@ -11,7 +11,7 @@ use godot::classes::{CharacterBody2D, ICharacterBody2D};
 use crate::entity::slime::Slime;
 use crate::script::gamestate;
 use crate::script::playerstats::PlayerStats;
-
+use crate::log_info;
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]
@@ -56,7 +56,7 @@ impl Adventurer{
 
     #[func]
     pub fn reset(&mut self){
-        godot_print!("Player reset");
+        log_info!("Player reset");
         PlayerStats::singleton().bind_mut().reset();
 
         self.health = PlayerStats::singleton().bind_mut().max_health;
@@ -67,7 +67,7 @@ impl Adventurer{
     #[func]
     pub fn try_interact(&mut self){
         if self.current_interactable.is_some(){
-            godot_print!("Interaction triggered");
+            log_info!("Interaction triggered");
             self.current_interactable.as_mut().unwrap().call("interact", &[]);
         }        
     }
@@ -83,7 +83,7 @@ impl Adventurer{
         
         if input.is_action_just_pressed("interact") {
             if self.current_interactable.is_some(){
-                godot_print!("Interaction triggered");
+                log_info!("Interaction triggered");
                 self.current_interactable.as_mut().unwrap().call("interact", &[]);
             }
         }
@@ -188,7 +188,7 @@ impl Adventurer{
         self.is_attacking = false;
         let current_anim = self.animated_sprite.as_ref().unwrap().get_animation();
         if current_anim == "die" {
-            godot_print!("Player Death Signal Emitted");
+            log_info!("Player Death Signal Emitted");
             self.signals().s_death().emit();
         }
     }
@@ -197,7 +197,7 @@ impl Adventurer{
     fn on_body_entered(&mut self,  body: Gd<Node2D>){
         if self.is_attacking && body.get_name().contains("Slime"){
             if let Ok(mut slime) = body.try_cast::<Slime>(){
-                godot_print!("Slime Hit");
+                log_info!("Slime Hit");
                 let mut bind_slime = slime.bind_mut();
                 bind_slime.take_damage(self.strength, self.base().get_position());
             }            
@@ -206,9 +206,9 @@ impl Adventurer{
 
     #[func]
     fn on_interactionbox_area_entered(&mut self, body: Gd<Node2D>){
-        godot_print!("Entered interaction area");
+        log_info!("Entered interaction area");
         if body.get_parent().is_some() && body.get_parent().as_ref().unwrap().get_name() == "Interactables"{
-            godot_print!("Entered interactable area");
+            log_info!("Entered interactable area");
             self.current_interactable = Some(body);
             self.interaction_indicator.as_mut().unwrap().show();
         }        
@@ -218,7 +218,7 @@ impl Adventurer{
     fn on_interactionbox_area_exited(&mut self, body: Gd<Node2D>){
         if self.current_interactable.is_some(){
             if self.current_interactable.as_ref().unwrap().instance_id() == body.instance_id(){
-                godot_print!("Exited interactable area");
+                log_info!("Exited interactable area");
                 self.current_interactable.take();
                 self.interaction_indicator.as_mut().unwrap().hide();
             }
@@ -250,11 +250,11 @@ impl Adventurer{
         PlayerStats::singleton().bind_mut().health -= damage;
         self.signals().s_health_changes().emit(new_health);   
 
-        godot_print!("{}", self.health);
+        log_info!("{}", self.health);
 
         // check for death
         if self.health <= 0 {
-            godot_print!("Player Died");
+            log_info!("Player Died");
             self.play_one_time_animation("die".to_string());
             self.is_dead = true;
             self.base_mut().set_velocity(Vector2::ZERO);
@@ -312,7 +312,7 @@ impl ICharacterBody2D for Adventurer{
         self.interaction_indicator = self.base().get_node_as::<Label>("InteractionIndicator").into();
 
 
-        godot_print!("Current singleton {}", self.health);
+        log_info!("Current singleton {}", self.health);
         
         // Initialize signal callbacks
         let animation_finish_callable = Callable::from_object_method(&self.base(), "on_animation_finish");

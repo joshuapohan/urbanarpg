@@ -1,0 +1,14 @@
+{
+	"slimes_killed_01": {
+		"id": "slimes_killed_01",
+		"is_one_time": false
+	},
+	"talked_to_guide": {
+		"id": "talked_to_guide",
+		"is_one_time": true
+	},
+	"good_morning_guide": {
+		"id": "good_morning_guide",
+		"is_one_time": true
+	}    
+}

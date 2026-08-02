@@ -1,6 +1,8 @@
-use crate::script::{dialoguenode::{DialogueChoice, DialogueLine, DialogueNode, load_dialogues}, gamestate};
+use crate::script::{dialoguenode::{DialogueChoice,DialogueNode, load_dialogues}, eventtracker::EventTracker, gamestate};
 use godot::prelude::*;
 use std::collections::HashMap;
+use crate::log_info;
+use crate::log_error;
 
 #[derive(GodotClass)]
 #[class(singleton)]
@@ -47,7 +49,8 @@ impl DialogueSystem {
             self.current_line_index = 0;
             self.show_current_line();
         } else {
-            godot_print!("Dialogue id not found {}", dialogue_id);
+            log_info!("Dialogue id not found {}", dialogue_id);
+            self.signals().s_dialogue_ended().emit();
         }
     }
 
@@ -55,19 +58,19 @@ impl DialogueSystem {
     pub fn advance(&mut self){
         let is_dialogue_end = gamestate::GameState::singleton().bind().is_dialogue_state_end();
         if  !is_dialogue_end {
-            godot_print!("Skip typewriter");
+            log_info!("Skip typewriter");
             self.signals().s_skip_typewriter().emit();            
         } else {
-            godot_print!("Next line");
+            log_info!("Next line");
             self.next_line();
         }
     }
 
     #[func]
     pub fn move_choice_up(&mut self){
-        godot_print!("In dialogue, up 1");
+        log_info!("In dialogue, up 1");
         if self.is_in_dialogue_choice && self.current_choices.is_some(){
-            godot_print!("In dialogue, up 2");
+            log_info!("In dialogue, up 2");
 
             let choices = self.current_choices.as_ref().unwrap();
             if self.current_choice_index <= 0 {
@@ -77,15 +80,15 @@ impl DialogueSystem {
             }
             let index = self.current_choice_index;            
             self.signals().s_choice_highlighted().emit( index);
-            godot_print!("In dialogue, up 3 {}", self.current_choice_index);
+            log_info!("In dialogue, up 3 {}", self.current_choice_index);
         }
     }
 
     #[func]
     pub fn move_choice_down(&mut self){
-        godot_print!("In dialogue, down 1");
+        log_info!("In dialogue, down 1");
         if self.is_in_dialogue_choice && self.current_choices.is_some(){
-            godot_print!("In dialogue, down 2");
+            log_info!("In dialogue, down 2");
             let choices = self.current_choices.as_ref().unwrap();
             if self.current_choice_index >= choices.len() as i32 - 1 {
                 self.current_choice_index = 0
@@ -94,7 +97,7 @@ impl DialogueSystem {
             }
             let index = self.current_choice_index;            
             self.signals().s_choice_highlighted().emit(index);
-            godot_print!("In dialogue, down 3 {}", self.current_choice_index);
+            log_info!("In dialogue, down 3 {}", self.current_choice_index);
         }
     }
     
@@ -103,17 +106,19 @@ impl DialogueSystem {
         if self.is_in_dialogue_choice && self.current_choices.is_some(){
             let choices = self.current_choices.as_ref().unwrap();
             if self.current_choice_index >= choices.len() as i32 {
-                godot_error!("Invalid dialogue choice index {}", self.current_choice_index);
+                log_error!("Invalid dialogue choice index {}", self.current_choice_index);
+                self.signals().s_dialogue_ended().emit();
                 return
             }
             let index = self.current_choice_index as usize;
             let choice_node = choices.get(index);
             if choice_node.is_none() {
-                godot_error!("None choice node {}", self.current_choice_index);
+                log_error!("None choice node {}", self.current_choice_index);
+                self.signals().s_dialogue_ended().emit();
                 return
             } else {
                 let next_dialogue_id = choice_node.as_ref().unwrap().next_id.clone();
-                godot_print!("Starting next dialogue id: {}", next_dialogue_id);
+                log_info!("Starting next dialogue id: {}", next_dialogue_id);
                 self.start_dialogue_by_id(next_dialogue_id);
             }
         }
@@ -124,7 +129,8 @@ impl DialogueSystem {
     pub fn next_line(&mut self) {
 
         if self.current_dialogue_node.is_none() {
-            godot_print!("Showing current line on nonexistent dialogue node");
+            log_info!("Showing current line on nonexistent dialogue node");
+            self.signals().s_dialogue_ended().emit();
             return;
         }
 
@@ -135,7 +141,7 @@ impl DialogueSystem {
 
         self.current_line_index = self.current_line_index + 1;
         let node = self.current_dialogue_node.as_ref().unwrap();
-        godot_print!("current line index {} , dialogue len {}",self.current_line_index, node.lines.len() );
+        log_info!("current line index {} , dialogue len {}",self.current_line_index, node.lines.len() );
         if self.current_line_index >= node.lines.len() as i32 {
             match &node.choices {
                 Some(choices) => {
@@ -158,12 +164,14 @@ impl DialogueSystem {
     #[func]
     fn show_current_line(&mut self) {
         if self.current_dialogue_node.is_none() {
-            godot_print!("Showing current line on nonexistent dialogue node");
+            log_info!("Showing current line on nonexistent dialogue node");
+            self.signals().s_dialogue_ended().emit();
             return;
         }
         
         if self.current_line_index > self.current_dialogue_node.as_ref().unwrap().lines.len() as i32{
-            godot_print!("line index exceeds dialogue lines");
+            log_info!("line index exceeds dialogue lines");
+            self.signals().s_dialogue_ended().emit();
             return;
         }
 
@@ -176,7 +184,7 @@ impl DialogueSystem {
             }
         };
         
-        godot_print!("Dialogue : {} {} : {}", avatar, speaker, text);
+        log_info!("Dialogue : {} {} : {}", avatar, speaker, text);
 
         self.signals().s_dialogue_started().emit(
             &text,
@@ -188,21 +196,18 @@ impl DialogueSystem {
     #[func]
     fn end_dialogue(&mut self) {
         if self.current_dialogue_node.is_none() {
-            godot_print!("Ending nonexistent dialogue");
+            log_info!("Ending nonexistent dialogue");
+            self.signals().s_dialogue_ended().emit();
             return;
         }
         let current_node = self.current_dialogue_node.take();
         if current_node.is_some() {
-            if current_node.as_ref().unwrap().on_exit_event.is_none(){
-
-            } else {
+            if current_node.as_ref().unwrap().on_exit_event.is_some(){
                 let event_id = current_node.as_ref().unwrap().on_exit_event.as_ref().unwrap().clone();
-                self.signals()
-                    .s_dialogue_event()
-                    .emit(&event_id);
+                EventTracker::singleton().bind_mut().trigger_event(event_id);
             }
         }
-        godot_print!("ending current dialogue");
+        log_info!("ending current dialogue");
         self.signals().s_dialogue_ended().emit();
     }
 }

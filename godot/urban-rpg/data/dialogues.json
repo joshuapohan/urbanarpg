@@ -5,7 +5,7 @@
 	  { "text": "You're correct", "speaker_name": "Friend", "avatar_id": "friend" }
 	],
 	"choices": null,
-	"on_exit_event": "met_npc_001",
+	"on_exit_event": "talked_to_guide",
 	"require_flag": null
   },
   "2": {
@@ -14,17 +14,15 @@
 	  { "text": "You're wrong", "speaker_name": "Friend", "avatar_id": "friend" }
 	],
 	"choices": null,
-	"on_exit_event": "met_npc_001",
-	"require_flag": null
+	"on_exit_event": null
   },
   "3": {
-	"id": "1",
+	"id": "3",
 	"lines": [
 	  { "text": "You're kinda correct", "speaker_name": "Friend", "avatar_id": "friend" }
 	],
 	"choices": null,
-	"on_exit_event": "met_npc_001",
-	"require_flag": null
+	"on_exit_event": null
   },	
   "123": {
 	"id": "123",
@@ -46,7 +44,22 @@
 			"next_id": "3"			
 		}		
 	],
-	"on_exit_event": "met_npc_001",
-	"require_flag": null
-  }
+	"on_exit_event": "met_npc_001"
+  },
+  "villager_slime_kill": {
+	"id": "villager_slime_kill",
+	"lines": [
+	  { "text": "You sure killed a lotta slimes", "speaker_name": "Villager", "avatar_id": "villager" }
+	],
+	"choices": null,
+	"on_exit_event": null
+  },
+  "villager_correct_guess": {
+	"id": "villager_correct_guess",
+	"lines": [
+	  { "text": "You guessed correctly", "speaker_name": "Villager", "avatar_id": "villager" }
+	],
+	"choices": null,
+	"on_exit_event": null
+  }	    
 }
