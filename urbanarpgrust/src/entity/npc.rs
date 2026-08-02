@@ -70,10 +70,10 @@ impl Interactable for NPC {
         } else {
             godot_print!("[interact] Interaction triggered , no event check");                    
             self.interaction_id.clone()
-        }; 
+        };
         
-        DialogueSystem::singleton().bind_mut().start_dialogue_by_id(interaction_id);
         GameState::singleton().bind_mut().set_game_context_dialogue();
         GameState::singleton().bind_mut().pause_gameplay();        
+        DialogueSystem::singleton().bind_mut().start_dialogue_by_id(interaction_id);
     }
 }

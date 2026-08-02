@@ -48,6 +48,7 @@ impl DialogueSystem {
             self.show_current_line();
         } else {
             godot_print!("Dialogue id not found {}", dialogue_id);
+            self.signals().s_dialogue_ended().emit();
         }
     }
 
@@ -104,12 +105,14 @@ impl DialogueSystem {
             let choices = self.current_choices.as_ref().unwrap();
             if self.current_choice_index >= choices.len() as i32 {
                 godot_error!("Invalid dialogue choice index {}", self.current_choice_index);
+                self.signals().s_dialogue_ended().emit();
                 return
             }
             let index = self.current_choice_index as usize;
             let choice_node = choices.get(index);
             if choice_node.is_none() {
                 godot_error!("None choice node {}", self.current_choice_index);
+                self.signals().s_dialogue_ended().emit();
                 return
             } else {
                 let next_dialogue_id = choice_node.as_ref().unwrap().next_id.clone();
@@ -125,6 +128,7 @@ impl DialogueSystem {
 
         if self.current_dialogue_node.is_none() {
             godot_print!("Showing current line on nonexistent dialogue node");
+            self.signals().s_dialogue_ended().emit();
             return;
         }
 
@@ -159,11 +163,13 @@ impl DialogueSystem {
     fn show_current_line(&mut self) {
         if self.current_dialogue_node.is_none() {
             godot_print!("Showing current line on nonexistent dialogue node");
+            self.signals().s_dialogue_ended().emit();
             return;
         }
         
         if self.current_line_index > self.current_dialogue_node.as_ref().unwrap().lines.len() as i32{
             godot_print!("line index exceeds dialogue lines");
+            self.signals().s_dialogue_ended().emit();
             return;
         }
 
@@ -189,6 +195,7 @@ impl DialogueSystem {
     fn end_dialogue(&mut self) {
         if self.current_dialogue_node.is_none() {
             godot_print!("Ending nonexistent dialogue");
+            self.signals().s_dialogue_ended().emit();
             return;
         }
         let current_node = self.current_dialogue_node.take();

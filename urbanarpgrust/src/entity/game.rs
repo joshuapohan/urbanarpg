@@ -84,19 +84,6 @@ impl MainNode{
         }
     }
 
-    #[func]
-    fn on_interaction_callback(&mut self, interaction_type: GString, interaction_id: GString){
-        godot_print!("Interaction triggered with type : {}, id : {}", interaction_type, interaction_id);
-        match interaction_type.to_string().as_str() {
-            "npc_0" => {
-                DialogueSystem::singleton().bind_mut().start_dialogue_by_id(interaction_id);
-                GameState::singleton().bind_mut().set_game_context_dialogue();
-                GameState::singleton().bind_mut().pause_gameplay();
-            },
-            _ => {}
-        }
-    }
-
     // --------------------------------------------------------------
     //   LEVEL MANAGEMENT
     // --------------------------------------------------------------
@@ -145,18 +132,6 @@ impl MainNode{
 
             let health_changed_callable = Callable::from_object_method(&self.hud.as_ref().unwrap(), "update_health");
             self.player.as_mut().unwrap().connect("s_health_changes", &health_changed_callable);
-
-            /* 
-            let mut interactables = self.base().try_get_node_as::<Node2D>("CurrentLevel/Interactables");
-            if interactables.is_some(){
-                let interaction_callback = Callable::from_object_method(&self.base(), "on_interaction_callback");
-                for mut child in interactables.as_mut().unwrap().get_children().iter_shared(){
-                    if child.has_signal("s_npc_interacted"){
-                        child.connect("s_npc_interacted", &interaction_callback);
-                    }
-                }
-            }
-            */          
             
         }
     }
