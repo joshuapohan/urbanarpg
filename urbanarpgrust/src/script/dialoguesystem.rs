@@ -1,4 +1,4 @@
-use crate::script::{dialoguenode::{DialogueChoice, DialogueLine, DialogueNode, load_dialogues}, gamestate};
+use crate::script::{dialoguenode::{DialogueChoice,DialogueNode, load_dialogues}, eventtracker::EventTracker, gamestate};
 use godot::prelude::*;
 use std::collections::HashMap;
 
@@ -193,13 +193,9 @@ impl DialogueSystem {
         }
         let current_node = self.current_dialogue_node.take();
         if current_node.is_some() {
-            if current_node.as_ref().unwrap().on_exit_event.is_none(){
-
-            } else {
+            if current_node.as_ref().unwrap().on_exit_event.is_some(){
                 let event_id = current_node.as_ref().unwrap().on_exit_event.as_ref().unwrap().clone();
-                self.signals()
-                    .s_dialogue_event()
-                    .emit(&event_id);
+                EventTracker::singleton().bind_mut().trigger_event(event_id);
             }
         }
         godot_print!("ending current dialogue");

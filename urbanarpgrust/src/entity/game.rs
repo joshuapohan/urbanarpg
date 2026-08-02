@@ -6,6 +6,7 @@ use crate::entity::adventurer::Adventurer;
 use crate::scene::dialoguebox::DialogueBox;
 use crate::scene::hud::HUD;
 use crate::scene::mainmenu::MainMenu;
+use crate::script::eventtracker::EventTracker;
 use crate::script::gamestate::{self, GameState};
 use crate::script::dialoguesystem::DialogueSystem;
 use crate::template::levelroot::LevelRoot;
@@ -248,7 +249,7 @@ impl INode2D for MainNode{
         DialogueSystem::singleton().connect("s_dialogue_started", &dialogue_started_callable);
         DialogueSystem::singleton().connect("s_dialogue_ended", &dialogue_ended_callable);
         DialogueSystem::singleton().connect("s_choices_shown", &choice_shown_callable);
-        DialogueSystem::singleton().connect("s_choice_highlighted", &choice_highlighted_callable);
+        DialogueSystem::singleton().connect("s_choice_highlighted", &choice_highlighted_callable);        
 
         // game state paused on initial
         gamestate::GameState::singleton().bind_mut().pause_gameplay();

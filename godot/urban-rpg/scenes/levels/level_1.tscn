@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://dr2ejixib4uen" path="res://scenes/item/healthpickup.tscn" id="2_6iamk"]
 [ext_resource type="PackedScene" uid="uid://tj761ybf50cx" path="res://scenes/slime.tscn" id="2_x42e6"]
 [ext_resource type="PackedScene" uid="uid://bw6la4k3w2ekm" path="res://scenes/item/bulletpickup.tscn" id="3_nsrm0"]
+[ext_resource type="PackedScene" uid="uid://c7pc3nb5xdod2" path="res://scenes/characters/guide.tscn" id="5_6761a"]
 
 [node name="LevelRoot" unique_id=494037133 instance=ExtResource("1_6iamk")]
 
@@ -23,4 +24,16 @@ position = Vector2(336, 672)
 position = Vector2(272, 728)
 
 [node name="Guide" parent="Interactables" parent_id_path=PackedInt32Array(539155697) index="0" unique_id=2058608418]
-interaction_id = 255
+interaction_id = "123"
+
+[node name="Guide2" parent="Interactables" parent_id_path=PackedInt32Array(539155697) index="1" unique_id=623397450 instance=ExtResource("5_6761a")]
+interaction_id = "123"
+event_check_ids = Array[String](["slimes_killed_01"])
+event_check_pass_interaction_id = "villager_slime_kill"
+position = Vector2(1072, 616)
+
+[node name="Guide3" parent="Interactables" parent_id_path=PackedInt32Array(539155697) index="2" unique_id=1876842915 instance=ExtResource("5_6761a")]
+interaction_id = "123"
+event_check_ids = Array[String](["talked_to_guide"])
+event_check_pass_interaction_id = "villager_correct_guess"
+position = Vector2(288, 192)

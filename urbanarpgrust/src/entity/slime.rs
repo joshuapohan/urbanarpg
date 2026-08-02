@@ -4,7 +4,7 @@ use godot::classes::{AnimatedSprite2D, Area2D, AudioStreamPlayer2D, CharacterBod
 use rand::Rng;
 
 use crate::entity::adventurer::Adventurer;
-use crate::script::gamestate;
+use crate::script::{eventtracker, gamestate};
 use crate::template::levelroot::LevelRoot;
 use crate::ui::healthbar::HealthBar;
 
@@ -161,7 +161,11 @@ impl Slime {
         } else {
             godot_error!("Unable to find collision node for slime")
         }
-        self.drop_item();            
+        self.drop_item();
+
+        // trigger slime kill event
+        eventtracker::EventTracker::singleton().bind_mut().trigger_event("slimes_killed_01".to_gstring());
+
     }
     
     #[func]
