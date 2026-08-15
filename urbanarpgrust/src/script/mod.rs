@@ -1,6 +1,5 @@
-pub mod dialoguenode;
-pub mod dialoguesystem;
+pub mod dialogue;
 pub mod gamestate;
 pub mod playerstats;
-pub mod eventtracker;
-pub mod eventdetail;
+pub mod event;
+pub mod inventory;

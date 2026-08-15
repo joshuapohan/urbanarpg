@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use godot::prelude::*;
-use crate::script::eventdetail::{self, EventDetail};
+use crate::script::event::eventdetail::{self, EventDetail};
 use crate::log_info;
 use crate::log_error;
 

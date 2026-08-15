@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://tj761ybf50cx" path="res://scenes/slime.tscn" id="2_x42e6"]
 [ext_resource type="PackedScene" uid="uid://bw6la4k3w2ekm" path="res://scenes/item/bulletpickup.tscn" id="3_nsrm0"]
 [ext_resource type="PackedScene" uid="uid://c7pc3nb5xdod2" path="res://scenes/characters/guide.tscn" id="5_6761a"]
+[ext_resource type="PackedScene" uid="uid://bgtna4w7jomrx" path="res://scenes/item/coinpickup.tscn" id="5_sk5k4"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6761a"]
 size = Vector2(48.5, 197)
@@ -23,6 +24,15 @@ position = Vector2(336, 672)
 [node name="Bulletpickup" parent="Items" parent_id_path=PackedInt32Array(803044415) index="1" unique_id=1857889947 instance=ExtResource("3_nsrm0")]
 position = Vector2(272, 728)
 
+[node name="Coinpickup" parent="Items" parent_id_path=PackedInt32Array(803044415) index="2" unique_id=23873107 instance=ExtResource("5_sk5k4")]
+position = Vector2(336, 864)
+
+[node name="Coinpickup2" parent="Items" parent_id_path=PackedInt32Array(803044415) index="3" unique_id=914853636 instance=ExtResource("5_sk5k4")]
+position = Vector2(432, 864)
+
+[node name="Coinpickup3" parent="Items" parent_id_path=PackedInt32Array(803044415) index="4" unique_id=1953079027 instance=ExtResource("5_sk5k4")]
+position = Vector2(528, 864)
+
 [node name="Guide2" parent="Interactables" parent_id_path=PackedInt32Array(539155697) index="0" unique_id=623397450 instance=ExtResource("5_6761a")]
 interaction_id = "123"
 event_check_ids = Array[String](["slimes_killed_01"])
@@ -36,6 +46,7 @@ event_check_pass_interaction_id = "villager_correct_guess"
 position = Vector2(288, 192)
 
 [node name="Guide" parent="Interactables" parent_id_path=PackedInt32Array(539155697) index="2" unique_id=2058608418 instance=ExtResource("5_6761a")]
+interaction_id = "123"
 position = Vector2(360, 728)
 
 [node name="Portal" type="Portal" parent="." index="6" unique_id=1353720612]

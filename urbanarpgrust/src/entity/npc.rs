@@ -2,8 +2,8 @@ use godot::prelude::*;
 use godot::classes::{AnimatedSprite2D, Area2D, AudioStreamPlayer2D, CharacterBody2D, CollisionShape2D, ICharacterBody2D, Timer, Tween};
 
 use crate::entity::traits::Interactable;
-use crate::script::dialoguesystem::DialogueSystem;
-use crate::script::eventtracker;
+use crate::script::dialogue::dialoguesystem::DialogueSystem;
+use crate::script::event::eventtracker;
 use crate::script::gamestate::GameState;
 use crate::log_info;
 

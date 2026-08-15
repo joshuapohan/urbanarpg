@@ -1,4 +1,4 @@
-use crate::script::{dialoguenode::{DialogueChoice,DialogueNode, load_dialogues}, eventtracker::EventTracker, gamestate};
+use crate::script::{dialogue::dialoguenode::{DialogueChoice,DialogueNode, load_dialogues}, event::eventtracker::EventTracker, gamestate};
 use godot::prelude::*;
 use std::collections::HashMap;
 use crate::log_info;
