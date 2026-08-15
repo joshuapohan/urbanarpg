@@ -4,7 +4,7 @@ use godot::classes::{AnimatedSprite2D, Area2D, AudioStreamPlayer2D, CharacterBod
 use rand::Rng;
 
 use crate::entity::adventurer::Adventurer;
-use crate::script::{eventtracker, gamestate};
+use crate::script::{event::eventtracker, gamestate};
 use crate::template::levelroot::LevelRoot;
 use crate::ui::healthbar::HealthBar;
 use crate::log_info;
