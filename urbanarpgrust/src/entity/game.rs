@@ -1,6 +1,6 @@
 use godot::obj::Base;
 use godot::prelude::{GodotClass, godot_api};
-use godot::classes::{INode2D, InputEvent, Node2D};
+use godot::classes::{INode2D, Input, InputEvent, Node2D};
 use godot::prelude::*;
 use crate::entity::adventurer::Adventurer;
 use crate::scene::dialoguebox::DialogueBox;
@@ -165,7 +165,7 @@ impl INode2D for MainNode{
             dialogue_box: None,
         }
     }
-
+    /* 
     fn input(&mut self, event: Gd<InputEvent>){
         if event.is_action_pressed("pause"){
             let is_paused = gamestate::GameState::singleton().bind().is_gameplay_paused();
@@ -192,7 +192,37 @@ impl INode2D for MainNode{
             if event.is_action_pressed("interact") {
                 self.player.as_mut().unwrap().bind_mut().try_interact();
             }
-        }
+        }        
+    }
+    */
+
+    fn physics_process(&mut self, _delta: f64){
+        if Input::singleton().is_action_just_pressed("pause"){
+            let is_paused = gamestate::GameState::singleton().bind().is_gameplay_paused();
+            if is_paused {
+                gamestate::GameState::singleton().bind_mut().resume_gameplay();
+            } else {
+                gamestate::GameState::singleton().bind_mut().pause_gameplay();
+            }
+        } else if gamestate::GameState::singleton().bind().is_in_dialogue() {
+            if Input::singleton().is_action_just_pressed("interact") {
+                // continue to next line
+                log_info!("In dialogue, advancing");
+                DialogueSystem::singleton().bind_mut().advance();                
+                //DialogueSystem::singleton().bind_mut().next_line();
+                self.base_mut().get_viewport().unwrap().set_input_as_handled();
+            } else if Input::singleton().is_action_just_pressed("move_up"){
+                log_info!("In dialogue, up");
+                DialogueSystem::singleton().bind_mut().move_choice_up();
+            } else if Input::singleton().is_action_just_pressed("move_down"){
+                log_info!("In dialogue, down");
+                DialogueSystem::singleton().bind_mut().move_choice_down();
+            }
+        } else {
+            if Input::singleton().is_action_just_pressed("interact") {
+                self.player.as_mut().unwrap().bind_mut().try_interact();
+            }
+        }        
     }
 
 

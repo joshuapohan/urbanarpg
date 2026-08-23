@@ -1,5 +1,5 @@
 use godot::prelude::*;
-use godot::classes::{CanvasLayer, ICanvasLayer, Label, PanelContainer, RichTextLabel, StyleBox, Timer, VBoxContainer};
+use godot::classes::{CanvasLayer, ICanvasLayer, Label, PanelContainer, RichTextLabel, ScrollContainer, StyleBox, Timer, VBoxContainer};
 use serde_json::map::Iter;
 
 use crate::script::gamestate;
@@ -21,6 +21,7 @@ pub struct DialogueBox {
     effect_timer: Option<Gd<Timer>>,
     choice_container: Option<Gd<VBoxContainer>>,
     choice_scene: Option<Gd<PackedScene>>,
+    scroll_container: Option<Gd<ScrollContainer>>,
 
     line_len: i32,
 }
@@ -84,17 +85,6 @@ impl DialogueBox {
             child.queue_free();
         }
 
-
-        /* 
-        for (current_index, choice) in choices.iter().enumerate() {
-            let mut choice_box = self.choice_scene.as_ref().unwrap().instantiate_as::<PanelContainer>();
-            choice_box.get_node_as::<Label>("MarginContainer/HBoxContainer/ChoiceText").set_text(choice);
-            if current_index == 0 {
-                choice_box.add_theme_stylebox_override("panel", self.highlighted_style.as_ref().unwrap());
-            }
-            container.add_child(&choice_box);
-        }
-        */        
         self.base_mut().call_deferred("deferred_show_choices", &[choices.to_variant()]);
 
     }
@@ -128,6 +118,7 @@ impl DialogueBox {
             let mut panel_container = child.cast::<PanelContainer>();
             if current_index as i32 == index {
                 panel_container.add_theme_stylebox_override("panel", self.highlighted_style.as_ref().unwrap());
+                self.scroll_container.as_mut().unwrap().ensure_control_visible(&panel_container);
             } else {
                 panel_container.add_theme_stylebox_override("panel", self.normal_style.as_ref().unwrap());
             }
@@ -149,16 +140,18 @@ impl ICanvasLayer for DialogueBox{
             choice_scene: None,
             normal_style: None, 
             highlighted_style: None,
+            scroll_container: None,
         }
     }
 
     
     fn ready(&mut self){
-        self.name_label = self.base().get_node_as::<RichTextLabel>("MarginContainer/VBoxContainer/Name").into(); 
-        self.text_label = self.base().get_node_as::<RichTextLabel>("MarginContainer/VBoxContainer/Text").into(); 
+        self.name_label = self.base().get_node_as::<RichTextLabel>("DialogueContainer/MarginContainer/VBoxContainer/Name").into(); 
+        self.text_label = self.base().get_node_as::<RichTextLabel>("DialogueContainer/MarginContainer/VBoxContainer/Text").into(); 
         self.effect_timer = self.base().get_node_as::<Timer>("EffectTimer").into();
-        self.choice_container = self.base().get_node_as::<VBoxContainer>("MarginContainer/ScrollContainer/ChoiceContainer").into(); 
+        self.choice_container = self.base().get_node_as::<VBoxContainer>("DialogueContainer/MarginContainer/ScrollContainer/ChoiceContainer").into(); 
         self.choice_scene = Some(load::<PackedScene>("res://scenes/ui/choicebox.tscn"));
+        self.scroll_container = self.base().get_node_as::<ScrollContainer>("DialogueContainer/MarginContainer/ScrollContainer").into();
 
         let on_effect_timer_timeout_callback = Callable::from_object_method(&self.base(), "on_effect_timer_timeout");
         self.effect_timer.as_mut().unwrap().connect("timeout", &on_effect_timer_timeout_callback);

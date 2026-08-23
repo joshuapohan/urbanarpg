@@ -41,8 +41,8 @@ impl ICanvasLayer for MainMenu{
     }
 
     fn ready(&mut self){
-        self.start_button = self.base().get_node_as::<Button>("MenuContainer/StartButton").into();
-        self.quit_button = self.base().get_node_as::<Button>("MenuContainer/QuitButton").into();
+        self.start_button = self.base().get_node_as::<Button>("MenuScreen/MenuContainer/StartButton").into();
+        self.quit_button = self.base().get_node_as::<Button>("MenuScreen/MenuContainer/QuitButton").into();
 
         let start_button_callable = Callable::from_object_method(&self.base(),"on_start_button_pressed");
         self.start_button.as_mut().unwrap().connect("pressed", &start_button_callable);
