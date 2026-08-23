@@ -42,7 +42,15 @@
 		{
 			"text": "Good Afternoon",
 			"next_id": "3"			
-		}		
+		},
+		{
+			"text": "What?",
+			"next_id": "3"			
+		},
+		{
+			"text": "Huh?",
+			"next_id": "3"			
+		}							
 	],
 	"on_exit_event": "met_npc_001"
   },
