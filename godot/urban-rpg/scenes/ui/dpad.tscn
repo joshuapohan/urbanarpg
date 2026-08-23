@@ -1,0 +1,158 @@
+[gd_scene format=3 uid="uid://c330dgr1pd1hj"]
+
+[ext_resource type="Texture2D" uid="uid://cmf0d2dwaxvg5" path="res://assets/images/ui/controller_ps.png" id="2_7aeu8"]
+[ext_resource type="Texture2D" uid="uid://c3q6eqcb856bs" path="res://assets/images/ui/controller_xbox.png" id="2_ivkgl"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_85n4v"]
+atlas = ExtResource("2_7aeu8")
+region = Rect2(52, 181.79213, 8, 9.2078705)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7aeu8"]
+atlas = ExtResource("2_7aeu8")
+region = Rect2(54, 212, 10, 8)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fekcj"]
+atlas = ExtResource("2_7aeu8")
+region = Rect2(50, 34, 11, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u20bi"]
+atlas = ExtResource("2_7aeu8")
+region = Rect2(50, 66, 11, 12)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q0ov2"]
+atlas = ExtResource("2_ivkgl")
+region = Rect2(99, 196, 9, 9)
+
+[node name="Dpad" type="CanvasLayer" unique_id=988347699]
+
+[node name="Control" type="Control" parent="." unique_id=1325378186]
+modulate = Color(1, 1, 1, 0.40784314)
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 3
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="movement" type="Control" parent="Control" unique_id=1105210078]
+custom_minimum_size = Vector2(120, 120)
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -136.0
+offset_right = 144.0
+offset_bottom = -16.0
+grow_vertical = 0
+
+[node name="up" type="TextureButton" parent="Control/movement" unique_id=468605908]
+layout_mode = 0
+offset_left = 48.0
+offset_top = -48.0
+offset_right = 112.0
+offset_bottom = 16.0
+action_mode = 0
+keep_pressed_outside = true
+texture_normal = SubResource("AtlasTexture_85n4v")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="left" type="TextureButton" parent="Control/movement" unique_id=1489254154]
+layout_mode = 0
+offset_left = 16.0
+offset_top = -8.0
+offset_right = 80.0
+offset_bottom = 56.0
+texture_normal = SubResource("AtlasTexture_7aeu8")
+ignore_texture_size = true
+stretch_mode = 0
+
+[node name="right" type="TextureButton" parent="Control/movement" unique_id=1262603497]
+layout_mode = 0
+offset_left = 80.0
+offset_top = -8.0
+offset_right = 144.0
+offset_bottom = 56.0
+texture_normal = SubResource("AtlasTexture_7aeu8")
+ignore_texture_size = true
+stretch_mode = 0
+flip_h = true
+
+[node name="down" type="TextureButton" parent="Control/movement" unique_id=227261167]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 33.0
+offset_right = 112.0
+offset_bottom = 97.0
+action_mode = 0
+keep_pressed_outside = true
+texture_normal = SubResource("AtlasTexture_85n4v")
+ignore_texture_size = true
+stretch_mode = 0
+flip_v = true
+
+[node name="action" type="Control" parent="Control" unique_id=1933015676]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="interact" type="TextureButton" parent="Control/action" unique_id=1647859307]
+layout_mode = 0
+offset_left = -88.0
+offset_top = -63.0
+offset_right = -24.0
+offset_bottom = 1.0
+action_mode = 0
+keep_pressed_outside = true
+texture_normal = SubResource("AtlasTexture_fekcj")
+ignore_texture_size = true
+stretch_mode = 0
+flip_v = true
+
+[node name="attack" type="TextureButton" parent="Control/action" unique_id=966784131]
+layout_mode = 0
+offset_left = -152.0
+offset_top = -128.0
+offset_right = -88.0
+offset_bottom = -64.0
+action_mode = 0
+keep_pressed_outside = true
+texture_normal = SubResource("AtlasTexture_u20bi")
+ignore_texture_size = true
+stretch_mode = 0
+flip_v = true
+
+[node name="toggle" type="Control" parent="Control" unique_id=936077693]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -40.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="show" type="TextureButton" parent="Control/toggle" unique_id=1003847695]
+layout_mode = 0
+offset_left = -48.0
+offset_top = -184.0
+offset_right = 16.0
+offset_bottom = -136.0
+action_mode = 0
+keep_pressed_outside = true
+texture_normal = SubResource("AtlasTexture_q0ov2")
+ignore_texture_size = true
+stretch_mode = 0
+flip_v = true

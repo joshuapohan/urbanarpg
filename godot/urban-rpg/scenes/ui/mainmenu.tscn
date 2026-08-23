@@ -1,5 +1,7 @@
 [gd_scene format=3 uid="uid://dwsuqjr25dq0k"]
 
+[ext_resource type="PackedScene" uid="uid://c330dgr1pd1hj" path="res://scenes/ui/dpad.tscn" id="1_c040g"]
+
 [node name="Mainmenu" type="MainMenu" unique_id=985586024]
 
 [node name="MenuScreen" type="ColorRect" parent="." unique_id=854645810]
@@ -42,4 +44,4 @@ text = "Start"
 layout_mode = 2
 text = "Quit"
 
-[node name="TouchScreenButton" type="TouchScreenButton" parent="." unique_id=476643430]
+[node name="Dpad" parent="." unique_id=988347699 instance=ExtResource("1_c040g")]
