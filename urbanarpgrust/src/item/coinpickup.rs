@@ -43,6 +43,7 @@ impl IArea2D for CoinPickup {
             base, 
             base_pickup: BasePickup{
                 pickup_audio: None,
+                name: "coin".to_string(),
             }
         }
     }

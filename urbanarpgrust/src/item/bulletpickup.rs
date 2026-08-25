@@ -46,6 +46,7 @@ impl IArea2D for BulletPickup {
             bullet_count: 5,            
             base_pickup: BasePickup{
                 pickup_audio: None,
+                name: "bullet".to_string(),
             }
         }
     }

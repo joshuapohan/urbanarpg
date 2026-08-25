@@ -144,10 +144,6 @@ impl ICanvasLayer for Dpad {
         }
     }
 
-    fn input(&mut self, event: Gd<InputEvent>) {
-        godot_print!("input event: {:?}", event);
-    }    
-
     fn ready(&mut self){
         self.move_up_btn = self.base().get_node_as::<TextureButton>("Control/movement/up").into();
         self.move_left_btn = self.base().get_node_as::<TextureButton>("Control/movement/left").into();

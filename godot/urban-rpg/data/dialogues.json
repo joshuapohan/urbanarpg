@@ -62,12 +62,28 @@
 	"choices": null,
 	"on_exit_event": null
   },
-  "villager_correct_guess": {
-	"id": "villager_correct_guess",
+  "first_pickup_health": {
+	"id": "first_pickup_health",
 	"lines": [
-	  { "text": "You guessed correctly", "speaker_name": "Villager", "avatar_id": "villager" }
+	  { "text": "You picked up some health", "speaker_name": "", "avatar_id": "" }
 	],
 	"choices": null,
 	"on_exit_event": null
-  }	    
+  },
+  "first_pickup_coin": {
+	"id": "first_pickup_coin",
+	"lines": [
+	  { "text": "You picked up a coin", "speaker_name": "", "avatar_id": "" }
+	],
+	"choices": null,
+	"on_exit_event": null
+  },
+  "first_pickup_bullet": {
+	"id": "first_pickup_bullet",
+	"lines": [
+	  { "text": "You picked up a bullet", "speaker_name": "", "avatar_id": "" }
+	],
+	"choices": null,
+	"on_exit_event": null
+  }     
 }
