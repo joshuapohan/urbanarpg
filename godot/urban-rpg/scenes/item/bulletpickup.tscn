@@ -6,6 +6,7 @@
 [sub_resource type="CircleShape2D" id="CircleShape2D_ty53l"]
 
 [node name="Bulletpickup" type="BulletPickup" unique_id=1857889947]
+pickup_texture = ExtResource("1_nvvkw")
 scale = Vector2(2, 2)
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=326176755]

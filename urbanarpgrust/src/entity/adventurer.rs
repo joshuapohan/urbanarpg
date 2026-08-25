@@ -3,6 +3,8 @@ use godot::classes::Area2D;
 use godot::classes::AudioStreamPlayer2D;
 use godot::classes::Input;
 use godot::classes::Label;
+use godot::classes::Sprite2D;
+use godot::classes::Texture2D;
 use godot::classes::Timer;
 use godot::obj::Base;
 use godot::prelude::*;
@@ -41,6 +43,7 @@ pub struct Adventurer {
     damage_cooldown_timer: Option<Gd<Timer>>,
     current_interactable: Option<Gd<Node2D>>,
     interaction_indicator: Option<Gd<Label>>,
+    item_pickup_sprite: Option<Gd<Sprite2D>>,    
 
 
     base: Base<CharacterBody2D>    
@@ -147,6 +150,24 @@ impl Adventurer{
     fn play_one_time_animation(&mut self, name: String){
         self.animated_sprite.as_mut().unwrap().set_animation(name.as_str());
         self.animated_sprite.as_mut().unwrap().play();
+    }
+
+    pub fn show_pickup_item_sprite(&mut self, texture: Option<Gd<Texture2D>>){
+        if texture.is_none() {
+            return;
+        }
+
+        self.item_pickup_sprite.as_mut().unwrap().set_texture(&texture.unwrap());
+        self.item_pickup_sprite.as_mut().unwrap().show();
+    }
+
+    pub fn hide_pickup_item_sprite(&mut self){
+        self.item_pickup_sprite.as_mut().unwrap().hide();
+    }
+
+    #[func]
+    pub fn on_dialogue_ended(&mut self){
+        self.hide_pickup_item_sprite();
     }
 
     // --------------------------------------------------------------
@@ -291,6 +312,7 @@ impl ICharacterBody2D for Adventurer{
             current_interactable: None,
             interaction_indicator: None,
             damage_cooldown_timer: None,
+            item_pickup_sprite: None,
             last_direction: Vector2::RIGHT,
             is_attacking: false,
             is_invincible: false,
@@ -310,6 +332,7 @@ impl ICharacterBody2D for Adventurer{
         self.hitbox_area = self.base().get_node_as::<Area2D>("Hitbox").into();
         self.interactionbox_area = self.base().get_node_as::<Area2D>("Interactionbox").into();
         self.interaction_indicator = self.base().get_node_as::<Label>("InteractionIndicator").into();
+        self.item_pickup_sprite = self.base().get_node_as::<Sprite2D>("ItemPickup").into();
 
 
         log_info!("Current singleton {}", self.health);

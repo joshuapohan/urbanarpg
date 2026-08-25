@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://dr2ejixib4uen"]
 
+[ext_resource type="Texture2D" uid="uid://cbhbqcwqm4tcs" path="res://assets/images/ui/heart_full.png" id="1_3siy0"]
 [ext_resource type="Texture2D" uid="uid://4aemeqp5cjn7" path="res://assets/images/item/Heart.png" id="1_tgxxw"]
 [ext_resource type="AudioStream" uid="uid://d0o43gherk2ra" path="res://assets/audio/135936__bradwesson__collectcoin.wav" id="2_ry323"]
 
@@ -7,6 +8,7 @@
 size = Vector2(32, 32)
 
 [node name="HealthPickup" type="HealthPickup" unique_id=613859024]
+pickup_texture = ExtResource("1_3siy0")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1551519664]
 scale = Vector2(3, 3)

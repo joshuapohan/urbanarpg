@@ -1,6 +1,6 @@
 use godot::register::GodotClass;
 use godot::prelude::*;
-use godot::classes::{Area2D, AudioStreamPlayer2D, IArea2D};
+use godot::classes::{Area2D, AudioStreamPlayer2D, IArea2D, Texture2D};
 
 use crate::entity::adventurer::Adventurer;
 use crate::item::basepickup::BasePickup;
@@ -14,6 +14,10 @@ pub struct HealthPickup{
 
     base: Base<Area2D>,
     base_pickup: BasePickup, 
+
+    #[export]
+    pub pickup_texture: Option<Gd<Texture2D>>
+
 }
 
 #[godot_api]
@@ -30,9 +34,11 @@ impl HealthPickup{
         if  body.get_name().contains("Adventurer"){
             if let Ok(mut adventurer) = body.try_cast::<Adventurer>(){
                 log_info!("Adventurer Health Pickup");
-                let mut bind_adventurer = adventurer.bind_mut();
-                bind_adventurer.heal(self.heal_amount);
-                self.base_pickup.on_pickup(self.to_gd().upcast::<Area2D>());                
+                {
+                    let mut bind_adventurer = adventurer.bind_mut();
+                    bind_adventurer.heal(self.heal_amount);
+                }
+                self.base_pickup.on_pickup(self.to_gd().upcast::<Area2D>(), adventurer);                
             }            
         }
     }
@@ -48,12 +54,15 @@ impl IArea2D for HealthPickup{
             base_pickup: BasePickup{
                 pickup_audio: None,
                 name: "health".to_string(),
-            }
+                pickup_texture: None,
+            },
+            pickup_texture: None,
         }
     }
 
     fn ready(&mut self){
         self.base_pickup.pickup_audio = self.base().get_node_as::<AudioStreamPlayer2D>("PickupAudio").into();
+        self.base_pickup.pickup_texture = self.pickup_texture.clone();
 
         // Initialize hitbox callbacks
         let on_body_entered_callback = Callable::from_object_method(&self.base(), "on_body_entered");

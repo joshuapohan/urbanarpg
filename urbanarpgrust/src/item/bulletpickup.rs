@@ -1,6 +1,6 @@
 use godot::register::GodotClass;
 use godot::prelude::*;
-use godot::classes::{Area2D, AudioStreamPlayer2D, IArea2D};
+use godot::classes::{Area2D, AudioStreamPlayer2D, IArea2D, Texture2D};
 
 use crate::entity::adventurer::Adventurer;
 use crate::item::basepickup::BasePickup;
@@ -15,6 +15,8 @@ pub struct BulletPickup {
     base: Base<Area2D>,
     base_pickup: BasePickup,  
 
+    #[export]
+    pub pickup_texture: Option<Gd<Texture2D>>    
 }
 
 #[godot_api]
@@ -29,10 +31,8 @@ impl BulletPickup {
     #[func]
     fn on_body_entered(&mut self,  body: Gd<Node2D>){
         if  body.get_name().contains("Adventurer"){
-            if let Ok(mut adventurer) = body.try_cast::<Adventurer>(){
-                log_info!("Adventurer Bullet Pickup");
-                let mut bind_adventurer = adventurer.bind_mut();
-                self.base_pickup.on_pickup(self.to_gd().upcast::<Area2D>());                
+            if let Ok(adventurer) = body.try_cast::<Adventurer>(){
+                self.base_pickup.on_pickup(self.to_gd().upcast::<Area2D>(), adventurer);                
             }            
         }
     }
@@ -47,12 +47,15 @@ impl IArea2D for BulletPickup {
             base_pickup: BasePickup{
                 pickup_audio: None,
                 name: "bullet".to_string(),
-            }
+                pickup_texture: None,
+            },
+            pickup_texture: None,
         }
     }
 
     fn ready(&mut self){
         self.base_pickup.pickup_audio = self.base().get_node_as::<AudioStreamPlayer2D>("PickupAudio").into();
+        self.base_pickup.pickup_texture = self.pickup_texture.clone();
 
         // Initialize hitbox callbacks
         let on_body_entered_callback = Callable::from_object_method(&self.base(), "on_body_entered");

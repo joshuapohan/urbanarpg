@@ -1,7 +1,9 @@
+use godot::classes::Texture2D;
 use godot::prelude::*;
 use godot::classes::AudioStreamPlayer2D;
 use godot::classes::Area2D;
 
+use crate::entity::adventurer::Adventurer;
 use crate::script::dialogue::dialoguesystem::DialogueSystem;
 use crate::script::event::eventtracker::EventTracker;
 use crate::script::gamestate::GameState;
@@ -9,11 +11,12 @@ use crate::script::gamestate::GameState;
 pub struct BasePickup {    
     pub pickup_audio: Option<Gd<AudioStreamPlayer2D>>,
     pub name: String,
+    pub pickup_texture: Option<Gd<Texture2D>>    
 }
 
 impl BasePickup{
 
-    pub fn on_pickup(&mut self, mut base: Gd<Area2D>){
+    pub fn on_pickup(&mut self, mut base: Gd<Area2D>, mut player: Gd<Adventurer>){
         base.hide();
         base.set_deferred("monitoring", &false.to_variant());
         base.set_deferred("monitorable", &false.to_variant());
@@ -28,6 +31,12 @@ impl BasePickup{
             GameState::singleton().bind_mut().set_game_context_dialogue();
             GameState::singleton().bind_mut().pause_gameplay();
             EventTracker::singleton().bind_mut().trigger_event(pickup_event_dialogue_id.to_gstring());
+
+            // Start item pickup animation show
+            let mut bind_player = player.bind_mut();
+            bind_player.show_pickup_item_sprite(self.pickup_texture.clone());
+
+            // Start item pickup dialogue
             DialogueSystem::singleton().bind_mut().start_dialogue_by_id(pickup_event_dialogue_id.to_gstring());
         }
     }
