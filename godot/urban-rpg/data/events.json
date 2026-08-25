@@ -10,5 +10,17 @@
 	"good_morning_guide": {
 		"id": "good_morning_guide",
 		"is_one_time": true
-	}    
+	},
+	"first_pickup_health": {
+		"id": "first_pickup_health",
+		"is_one_time": true
+	},
+	"first_pickup_coin": {
+		"id": "first_pickup_coin",
+		"is_one_time": true
+	},
+	"first_pickup_bullet": {
+		"id": "first_pickup_bullet",
+		"is_one_time": true
+	}
 }
