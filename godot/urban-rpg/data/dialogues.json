@@ -1,89 +1,137 @@
 {
-  "1": {
-	"id": "1",
-	"lines": [
-	  { "text": "You're correct", "speaker_name": "Friend", "avatar_id": "friend" }
-	],
-	"choices": null,
-	"on_exit_event": "talked_to_guide",
-	"require_flag": null
-  },
-  "2": {
-	"id": "2",
-	"lines": [
-	  { "text": "You're wrong", "speaker_name": "Friend", "avatar_id": "friend" }
-	],
-	"choices": null,
-	"on_exit_event": null
-  },
-  "3": {
-	"id": "3",
-	"lines": [
-	  { "text": "You're kinda correct", "speaker_name": "Friend", "avatar_id": "friend" }
-	],
-	"choices": null,
-	"on_exit_event": null
-  },	
-  "123": {
-	"id": "123",
-	"lines": [
-	  { "text": "Hey! Good to see you!", "speaker_name": "Friend", "avatar_id": "friend" },
-	  { "text": "Been a while hasn't it?" , "speaker_name": "Friend", "avatar_id": "friend"}
-	],
-	"choices": [
-		{
-			"text": "Good Morning",
-			"next_id": "1"
-		},
-		{
-			"text": "Good Night",
-			"next_id": "2"			
-		},
-		{
-			"text": "Good Afternoon",
-			"next_id": "3"			
-		},
-		{
-			"text": "What?",
-			"next_id": "3"			
-		},
-		{
-			"text": "Huh?",
-			"next_id": "3"			
-		}							
-	],
-	"on_exit_event": "met_npc_001"
-  },
-  "villager_slime_kill": {
-	"id": "villager_slime_kill",
-	"lines": [
-	  { "text": "You sure killed a lotta slimes", "speaker_name": "Villager", "avatar_id": "villager" }
-	],
-	"choices": null,
-	"on_exit_event": null
-  },
-  "first_pickup_health": {
-	"id": "first_pickup_health",
-	"lines": [
-	  { "text": "You picked up some health", "speaker_name": "", "avatar_id": "" }
-	],
-	"choices": null,
-	"on_exit_event": null
-  },
-  "first_pickup_coin": {
-	"id": "first_pickup_coin",
-	"lines": [
-	  { "text": "You picked up a coin", "speaker_name": "", "avatar_id": "" }
-	],
-	"choices": null,
-	"on_exit_event": null
-  },
-  "first_pickup_bullet": {
-	"id": "first_pickup_bullet",
-	"lines": [
-	  { "text": "You picked up a bullet", "speaker_name": "", "avatar_id": "" }
-	],
-	"choices": null,
-	"on_exit_event": null
-  }     
+	"1": {
+		"choices": null,
+		"id": "1",
+		"lines": [
+			{
+				"avatar_id": "friend",
+				"speaker_name": "Friend",
+				"text": "You're correct"
+			}
+		],
+		"on_exit_event": "talked_to_guide",
+		"require_flag": null
+	},
+	"123": {
+		"choices": [
+			{
+				"next_id": "1",
+				"text": "Good Morning"
+			},
+			{
+				"next_id": "2",
+				"text": "Good Night"
+			},
+			{
+				"next_id": "3",
+				"text": "Good Afternoon"
+			},
+			{
+				"next_id": "3",
+				"text": "What?"
+			},
+			{
+				"next_id": "3",
+				"text": "Huh?"
+			}
+		],
+		"id": "123",
+		"lines": [
+			{
+				"avatar_id": "friend",
+				"speaker_name": "Friend",
+				"text": "Hey! Good to see you!"
+			},
+			{
+				"avatar_id": "friend",
+				"speaker_name": "Friend",
+				"text": "Been a while hasn't it?"
+			}
+		],
+		"on_exit_event": "met_npc_001"
+	},
+	"2": {
+		"choices": null,
+		"id": "2",
+		"lines": [
+			{
+				"avatar_id": "friend",
+				"speaker_name": "Friend",
+				"text": "You're wrong"
+			}
+		],
+		"on_exit_event": null
+	},
+	"3": {
+		"choices": null,
+		"id": "3",
+		"lines": [
+			{
+				"avatar_id": "friend",
+				"speaker_name": "Friend",
+				"text": "You're kinda correct"
+			}
+		],
+		"on_exit_event": null
+	},
+	"first_pickup_bullet": {
+		"choices": null,
+		"id": "first_pickup_bullet",
+		"lines": [
+			{
+				"avatar_id": "",
+				"speaker_name": "",
+				"text": "You picked up a bullet"
+			}
+		],
+		"on_exit_event": null
+	},
+	"first_pickup_coin": {
+		"choices": null,
+		"id": "first_pickup_coin",
+		"lines": [
+			{
+				"avatar_id": "",
+				"speaker_name": "",
+				"text": "You picked up a coin"
+			}
+		],
+		"on_exit_event": null
+	},
+	"first_pickup_health": {
+		"choices": null,
+		"id": "first_pickup_health",
+		"lines": [
+			{
+				"avatar_id": "",
+				"speaker_name": "",
+				"text": "You picked up some health"
+			}
+		],
+		"on_exit_event": null
+	},
+	"villager_correct_guess": {
+		"choices": null,
+		"id": "villager_correct_guess",
+		"lines": [
+			{
+				"avatar_id": "villager",
+				"speaker_name": "Villager",
+				"text": "You guessed correctly"
+			}
+		],
+		"on_exit_event": null
+	},
+	"villager_slime_kill": {
+		"choices": null,
+		"id": "villager_slime_kill",
+		"lines": [
+			{
+				"avatar_id": "villager",
+				"speaker_name": "Villager",
+				"text": "You sure killed a lotta slimes"
+			}
+		],
+		"on_exit_event": null
+	}
 }
