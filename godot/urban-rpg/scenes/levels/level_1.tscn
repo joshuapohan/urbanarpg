@@ -18,6 +18,9 @@ tile_map_data = PackedByteArray("AAABAAQAAAAAAAMAAAD//xAAAgAAAAsAAAAAABAAAgAAAAs
 [node name="Slime2" parent="Enemies" parent_id_path=PackedInt32Array(7531285) index="0" unique_id=1138708019 instance=ExtResource("2_x42e6")]
 position = Vector2(880, 696)
 
+[node name="Slime3" parent="Enemies" parent_id_path=PackedInt32Array(7531285) index="1" unique_id=70512857 instance=ExtResource("2_x42e6")]
+position = Vector2(816, 648)
+
 [node name="HealthPickup" parent="Items" parent_id_path=PackedInt32Array(803044415) index="0" unique_id=613859024 instance=ExtResource("2_6iamk")]
 position = Vector2(336, 672)
 
