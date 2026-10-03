@@ -74,6 +74,18 @@
 		],
 		"on_exit_event": null
 	},
+	"welcome_kokoriko": {
+		"choices": null,
+		"id": "welcome_kokoriko",
+		"lines": [
+			{
+				"avatar_id": "friend",
+				"speaker_name": "Friend",
+				"text": "Welcome to Kokoriko Village"
+			}
+		],
+		"on_exit_event": null
+	},	
 	"first_pickup_bullet": {
 		"choices": null,
 		"id": "first_pickup_bullet",
