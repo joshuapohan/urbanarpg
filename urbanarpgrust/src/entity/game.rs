@@ -3,6 +3,7 @@ use godot::prelude::{GodotClass, godot_api};
 use godot::classes::{INode2D, Input, InputEvent, Node2D};
 use godot::prelude::*;
 use crate::entity::adventurer::Adventurer;
+use crate::entity::bullet_pool::BulletPool;
 use crate::scene::dialoguebox::DialogueBox;
 use crate::scene::hud::HUD;
 use crate::scene::mainmenu::MainMenu;
@@ -117,6 +118,9 @@ impl MainNode{
         if self.current_level.is_some(){
             let mut portal: Option<Gd<Portal>> = self.current_level.as_mut().unwrap().get_node_as::<Portal>("Portal").into();
             let mut player: Option<Gd<Adventurer>> = self.current_level.as_mut().unwrap().get_node_as::<Adventurer>("Adventurer").into();
+
+            // setup bullet pool
+            BulletPool::singleton().bind_mut().initialize(self.current_level.clone().unwrap().upcast::<Node>(), 30);
 
             if let Some(gd_portal) =  &mut portal{
                 let on_portal_entered_callback = Callable::from_object_method(&self.base(), "on_portal_entered");

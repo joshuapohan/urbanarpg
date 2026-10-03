@@ -10,9 +10,11 @@ use godot::obj::Base;
 use godot::prelude::*;
 use godot::classes::{CharacterBody2D, ICharacterBody2D};
 
+use crate::entity::bullet_pool::BulletPool;
 use crate::entity::slime::Slime;
 use crate::script::gamestate;
 use crate::script::playerstats::PlayerStats;
+use crate::script::inventory::inventorysystem::InventorySystem;
 use crate::log_info;
 
 #[derive(GodotClass)]
@@ -179,6 +181,13 @@ impl Adventurer{
         self.swing_sword_audio.as_mut().unwrap().play();
         let last_v = self.last_direction;
         self.play_animation("attack".to_string(), last_v);
+
+        // check for bullets
+        let has_bullet = InventorySystem::singleton().bind().check_if_item_exist("bullet".to_gstring());
+        if has_bullet {
+            InventorySystem::singleton().bind_mut().take_item("bullet".to_gstring(), 1);
+            BulletPool::singleton().bind_mut().fire(self.base().get_position(), self.last_direction, 30);
+        }
     }
 
     // --------------------------------------------------------------

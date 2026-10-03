@@ -25,6 +25,32 @@ impl InventorySystem {
             log_error!("Item id not found {}", id);
         }
     }
+
+
+    #[func]
+    pub fn check_if_item_exist(&self, id: GString) -> bool{
+        if let Some(item)  = self.inventory.get(&id) {
+            return item.count > 0;
+        } else {
+            log_error!("Item id not found {}", id);
+            return false;
+        }        
+    }
+
+    #[func]
+    pub fn  take_item(&mut self, id: GString,  count: i32) -> i32 {
+        if let Some(item) = self.inventory.get_mut(&id){
+            if count > item.count {
+                log_error!("Item count insufficient {} {} {}", id, item.count, count);
+                return -1;
+            }
+            item.count = item.count - 1;
+            return item.count;
+        } else {
+            log_error!("Item not found {}", id);
+            return -1;
+        }
+    }
 }
 
 

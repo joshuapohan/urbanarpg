@@ -2,5 +2,9 @@
     "coin" : {
         "id": "coin",
         "count": 0
-    }
+    },
+    "bullet" : {
+        "id": "bullet",
+        "count": 0
+    }    
 }

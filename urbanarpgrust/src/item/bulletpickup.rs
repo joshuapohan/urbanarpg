@@ -5,6 +5,7 @@ use godot::classes::{Area2D, AudioStreamPlayer2D, IArea2D, Texture2D};
 use crate::entity::adventurer::Adventurer;
 use crate::item::basepickup::BasePickup;
 use crate::log_info;
+use crate::script::inventory::inventorysystem::InventorySystem;
 
 #[derive(GodotClass)]
 #[class(base=Area2D)]
@@ -32,6 +33,7 @@ impl BulletPickup {
     fn on_body_entered(&mut self,  body: Gd<Node2D>){
         if  body.get_name().contains("Adventurer"){
             if let Ok(adventurer) = body.try_cast::<Adventurer>(){
+                InventorySystem::singleton().bind_mut().add_item("bullet".to_gstring(), 5);
                 self.base_pickup.on_pickup(self.to_gd().upcast::<Area2D>(), adventurer);                
             }            
         }

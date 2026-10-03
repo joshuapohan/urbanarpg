@@ -92,7 +92,12 @@ impl Slime {
     }
     
     pub fn take_damage(&mut self, damage: i32, attacker_position: Vector2){
-        self.health -= damage;
+        if damage >= self. health {
+            self.health = 0
+        } else {
+            self.health -= damage;
+        }         
+        
         
         let hb = self.health_bar_ui.as_mut().unwrap();
         hb.bind_mut().update_health(self.health);

@@ -1,16 +1,16 @@
 [gd_scene format=3 uid="uid://bw6la4k3w2ekm"]
 
-[ext_resource type="Texture2D" uid="uid://4iv3kx1be27b" path="res://assets/images/item/Arrow.png" id="1_nvvkw"]
+[ext_resource type="Texture2D" uid="uid://dm1a4nlq82f1j" path="res://assets/images/item/Shuriken.png" id="2_l02qh"]
 [ext_resource type="AudioStream" uid="uid://d0o43gherk2ra" path="res://assets/audio/135936__bradwesson__collectcoin.wav" id="2_ty53l"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_ty53l"]
 
 [node name="Bulletpickup" type="BulletPickup" unique_id=1857889947]
-pickup_texture = ExtResource("1_nvvkw")
+pickup_texture = ExtResource("2_l02qh")
 scale = Vector2(2, 2)
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=326176755]
-texture = ExtResource("1_nvvkw")
+texture = ExtResource("2_l02qh")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1538780395]
 shape = SubResource("CircleShape2D_ty53l")
