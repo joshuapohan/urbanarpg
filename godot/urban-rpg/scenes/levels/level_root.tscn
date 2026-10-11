@@ -3496,3 +3496,5 @@ scale = Vector2(3, 3)
 [node name="Items" type="Node2D" parent="." unique_id=803044415]
 
 [node name="Interactables" type="Node2D" parent="." unique_id=539155697]
+
+[node name="Portals" type="Node2D" parent="." unique_id=468821521]

@@ -69,18 +69,14 @@ impl MainNode{
         */        
     }    
 
+    
 
     #[func]
-    fn on_portal_entered(&mut self, body: Gd<Node2D>){
+    fn on_portal_entered(&mut self, body: Gd<Node2D>, target_level_id: i32){
         if body.get_name().contains("Adventurer"){
             log_info!("Portal Entered");
-            // get target map id
-            let portal: Option<Gd<Portal>> = self.current_level.as_ref().unwrap().get_node_as::<Portal>("Portal").into();        
-            let target_level_id = portal.as_ref().unwrap().bind().get_portal_target_map_id();
             log_info!("Loading {}", target_level_id);
             self.base_mut().call_deferred("load_level", &[target_level_id.to_variant()]);
-            
-            //self.load_level();
         }
     }
 
@@ -116,16 +112,24 @@ impl MainNode{
 
         self.current_level = Some(node);
         if self.current_level.is_some(){
-            let mut portal: Option<Gd<Portal>> = self.current_level.as_mut().unwrap().get_node_as::<Portal>("Portal").into();
+            let portals: Vec<Gd<Portal>> = self.current_level.as_mut().unwrap()
+                .get_node_as::<Node2D>("Portals")
+                .get_children()
+                .iter_shared()
+                .filter_map(|child| child.try_cast::<Portal>().ok())
+                .collect();
+
+            for mut portal in portals {
+                let target_level_id = portal.bind_mut().get_portal_target_map_id();
+                let on_portal_entered_callback = Callable::from_object_method(&self.base(), "on_portal_entered").bind(&[target_level_id.to_variant()]);
+                portal.connect("body_entered", &on_portal_entered_callback);
+            }
+
             let mut player: Option<Gd<Adventurer>> = self.current_level.as_mut().unwrap().get_node_as::<Adventurer>("Adventurer").into();
 
             // setup bullet pool
             BulletPool::singleton().bind_mut().initialize(self.current_level.clone().unwrap().upcast::<Node>(), 30);
 
-            if let Some(gd_portal) =  &mut portal{
-                let on_portal_entered_callback = Callable::from_object_method(&self.base(), "on_portal_entered");
-                gd_portal.connect("body_entered", &on_portal_entered_callback);
-            }
 
             if let Some(gd_player) =  &mut player{
                 let on_player_death_callback = Callable::from_object_method(&self.base(), "on_player_death");
