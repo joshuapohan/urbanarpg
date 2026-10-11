@@ -4,3 +4,4 @@ pub mod playerstats;
 pub mod event;
 pub mod inventory;
 pub mod dpad;
+pub mod custom;

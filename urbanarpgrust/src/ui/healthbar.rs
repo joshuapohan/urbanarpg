@@ -9,15 +9,20 @@ pub struct HealthBar{
     health_sprite_2d: Option<Gd<Sprite2D>>,
     default_width: f32,
     default_height: f32,
+    initial_health: f32,
     
     base: Base<Node2D>
 }
 
 #[godot_api]
 impl HealthBar {
+    pub fn set_initial_health(&mut self, initial_health: f32) {
+        self.initial_health = initial_health;
+    }
+
     pub fn update_health(&mut self, new_health: i32){
         if let Some(sprite) = &mut self.health_sprite_2d {
-            let new_width = (new_health as f32 / 100.0) * self.default_width;
+            let new_width = (new_health as f32 / self.initial_health) * self.default_width;
             sprite.set_region_rect(Rect2 {position:Vector2::ZERO,size: Vector2{ x: new_width, y: self.default_height } });
         }        
     }        
@@ -34,6 +39,7 @@ impl INode2D for HealthBar{
 
             default_width: 0.0,
             default_height: 0.0,
+            initial_health: 100.0,
         }
     }
     

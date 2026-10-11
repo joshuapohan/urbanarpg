@@ -90,6 +90,10 @@ impl Slime {
             self.animated_sprite.as_mut().unwrap().play();
         }
     }
+
+    pub fn is_alive(&self) -> bool {
+        self.alive
+    }
     
     pub fn take_damage(&mut self, damage: i32, attacker_position: Vector2){
         if damage >= self. health {
@@ -251,6 +255,10 @@ impl ICharacterBody2D for Slime{
         self.hitbox_area = self.base().get_node_as::<Area2D>("Hitbox").into();
         self.attack_timer = self.base().get_node_as::<Timer>("AttackTimer").into();
         
+
+        let hb = self.health_bar_ui.as_mut().unwrap();
+        hb.bind_mut().set_initial_health(self.health as f32);
+
         
         // Initialize signals
         let on_sight_entered_callback = Callable::from_object_method(&self.base(), "on_sight_entered");

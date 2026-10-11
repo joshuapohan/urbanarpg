@@ -41,7 +41,11 @@ impl Bullet {
             if let Ok(mut slime) = body.try_cast::<Slime>(){
                 log_info!("Slime Hit");
                 let mut bind_slime = slime.bind_mut();
-                bind_slime.take_damage(self.damage, self.base().get_position());
+                if bind_slime.is_alive() {
+                    bind_slime.take_damage(self.damage, self.base().get_position());
+                } else {
+                    return
+                }
             }
             self.deactivate();
             return;
